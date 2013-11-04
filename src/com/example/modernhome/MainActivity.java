@@ -1,7 +1,6 @@
 package com.example.modernhome;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import android.os.Bundle;
@@ -10,7 +9,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.speech.RecognizerIntent;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -85,9 +83,9 @@ public class MainActivity extends Activity {
 			ArrayList<String> matches = data
 					.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
 
-//			ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
-//					android.R.layout.simple_list_item_1, matches);
-//			_resultsListView.setAdapter(arrayAdapter);
+			ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
+					android.R.layout.simple_list_item_1, matches);
+			_resultsListView.setAdapter(arrayAdapter);
 			
 			matchStrings(matches);
 
