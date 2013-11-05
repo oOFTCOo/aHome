@@ -1,39 +1,32 @@
 package com.example.modernhome;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 
 public class MainActivity extends Activity {
 
 	private static final int _REQUEST_RESULT_CODE = 4711;
 	private ListView _resultsListView;
+	private SpeechRecognizer sr;
+	private ContinuousRecognitionListener crl;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		Button speakButton = (Button) findViewById(R.id.speakButton);
 		_resultsListView = (ListView) findViewById(R.id.results);
-
-		PackageManager pm = getPackageManager();
-		List<ResolveInfo> activities = pm.queryIntentActivities(new Intent(
-				RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
-		if (activities.size() == 0) {
-			speakButton.setEnabled(false);
-		}
 
 	}
 
@@ -43,10 +36,23 @@ public class MainActivity extends Activity {
 	}
 
 	private void startVoiceRecognitionActivity() {
-		Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-				RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-		startActivityForResult(intent, _REQUEST_RESULT_CODE);
+		if (SpeechRecognizer.isRecognitionAvailable(getApplicationContext())) {
+			sr =  SpeechRecognizer
+					.createSpeechRecognizer(getApplicationContext());
+			crl = new ContinuousRecognitionListener();
+			sr.setRecognitionListener(crl);
+			Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+			intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+					RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+			intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
+					"com.example.modernhome");
+
+			// intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
+			/* startActivityForResult(intent, _REQUEST_RESULT_CODE); */
+			sr.startListening(intent);
+			Log.i("111", "111");
+		}
+
 	}
 
 	private void matchStrings(ArrayList<String> matches) {
@@ -55,17 +61,13 @@ public class MainActivity extends Activity {
 			communication.execute("Lampe", "aus");
 		} else if (matches.contains("Licht an")) {
 			communication.execute("Lampe", "an");
-		}
-		else if (matches.contains("Kaffee an")) {
+		} else if (matches.contains("Kaffee an")) {
 			communication.execute("Kaffee", "an");
-		}
-		else if (matches.contains("Kaffee aus")) {
+		} else if (matches.contains("Kaffee aus")) {
 			communication.execute("Kaffee", "aus");
-		}
-		else if (matches.contains("schalosien hoch")) {
+		} else if (matches.contains("schalosien hoch")) {
 			communication.execute("Schalosien", "hoch");
-		}
-		else if (matches.contains("schalosien runter")) {
+		} else if (matches.contains("schalosien runter")) {
 			communication.execute("Schalosien", "runter");
 		}
 	}
@@ -86,12 +88,13 @@ public class MainActivity extends Activity {
 			ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
 					android.R.layout.simple_list_item_1, matches);
 			_resultsListView.setAdapter(arrayAdapter);
-			
+
 			matchStrings(matches);
 
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 
 	}
+
 
 }
