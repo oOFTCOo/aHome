@@ -18,7 +18,7 @@ public class MainActivity extends Activity {
 	private static final int _REQUEST_RESULT_CODE = 4711;
 	private ListView _resultsListView;
 	private SpeechRecognizer sr;
-	private ContinuousRecognitionListener crl;
+	private ObservableRecognitionListener crl;
 	
 
 	@Override
@@ -39,7 +39,7 @@ public class MainActivity extends Activity {
 		if (SpeechRecognizer.isRecognitionAvailable(getApplicationContext())) {
 			sr =  SpeechRecognizer
 					.createSpeechRecognizer(getApplicationContext());
-			crl = new ContinuousRecognitionListener();
+			crl = new ObservableRecognitionListener();
 			sr.setRecognitionListener(crl);
 			Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 			intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
@@ -50,7 +50,6 @@ public class MainActivity extends Activity {
 			// intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
 			/* startActivityForResult(intent, _REQUEST_RESULT_CODE); */
 			sr.startListening(intent);
-			Log.i("111", "111");
 		}
 
 	}
@@ -76,24 +75,6 @@ public class MainActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == _REQUEST_RESULT_CODE && resultCode == RESULT_OK) {
-
-			ArrayList<String> matches = data
-					.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-
-			ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
-					android.R.layout.simple_list_item_1, matches);
-			_resultsListView.setAdapter(arrayAdapter);
-
-			matchStrings(matches);
-
-		}
-		super.onActivityResult(requestCode, resultCode, data);
-
 	}
 
 

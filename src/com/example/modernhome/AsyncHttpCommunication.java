@@ -11,15 +11,16 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 
 import android.os.AsyncTask;
 
-public class AsyncHttpCommunication extends AsyncTask<String, Void, Void> {
+public class AsyncHttpCommunication extends AsyncTask<String, Void, HttpResponse> {
 
 	private HttpClient _client;
 	private HttpPost _httpPost;
-	//private HttpResponse _response;
+	private HttpResponse _response;
 	private String _adress = "http://ahome.social-butler.de/commands.php";
 
 	public AsyncHttpCommunication() {
@@ -35,7 +36,7 @@ public class AsyncHttpCommunication extends AsyncTask<String, Void, Void> {
 			pairs.add(new BasicNameValuePair(Key, Value));
 			try {
 				_httpPost.setEntity(new UrlEncodedFormEntity(pairs));
-				/*_response =*/ _client.execute(_httpPost);
+				_response = _client.execute(_httpPost);
 			} catch (UnsupportedEncodingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -52,9 +53,9 @@ public class AsyncHttpCommunication extends AsyncTask<String, Void, Void> {
 	}
 
 	@Override
-	protected Void doInBackground(String... params) {
+	protected HttpResponse doInBackground(String... params) {
 		HttpPost(params[0], params[1]);
-		return null;
+		return _response;
 	}
 
 }
