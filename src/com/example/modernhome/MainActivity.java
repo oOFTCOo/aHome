@@ -1,74 +1,32 @@
 package com.example.modernhome;
 
-import java.util.ArrayList;
 
 import android.os.Bundle;
 import android.app.Activity;
-import android.content.Intent;
-import android.speech.RecognizerIntent;
-import android.speech.SpeechRecognizer;
-import android.util.Log;
 import android.view.Menu;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 public class MainActivity extends Activity {
-
-	private static final int _REQUEST_RESULT_CODE = 4711;
-	private ListView _resultsListView;
-	private SpeechRecognizer sr;
-	private ObservableRecognitionListener crl;
 	
+	private Controller _controller;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
-		_resultsListView = (ListView) findViewById(R.id.results);
-
+		_controller = new Controller(this); 
 	}
-
-	public void speakButtonClicked(View v) {
-
-		startVoiceRecognitionActivity();
+	
+	@Override
+	protected void onPause() {
+		_controller.onPause();
+		super.onPause();
 	}
-
-	private void startVoiceRecognitionActivity() {
-		if (SpeechRecognizer.isRecognitionAvailable(getApplicationContext())) {
-			sr =  SpeechRecognizer
-					.createSpeechRecognizer(getApplicationContext());
-			crl = new ObservableRecognitionListener();
-			sr.setRecognitionListener(crl);
-			Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-			intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-					RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-			intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
-					"com.example.modernhome");
-
-			// intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
-			/* startActivityForResult(intent, _REQUEST_RESULT_CODE); */
-			sr.startListening(intent);
-		}
-
-	}
-
-	private void matchStrings(ArrayList<String> matches) {
-		AsyncHttpCommunication communication = new AsyncHttpCommunication();
-		if (matches.contains("Licht aus")) {
-			communication.execute("Lampe", "aus");
-		} else if (matches.contains("Licht an")) {
-			communication.execute("Lampe", "an");
-		} else if (matches.contains("Kaffee an")) {
-			communication.execute("Kaffee", "an");
-		} else if (matches.contains("Kaffee aus")) {
-			communication.execute("Kaffee", "aus");
-		} else if (matches.contains("schalosien hoch")) {
-			communication.execute("Schalosien", "hoch");
-		} else if (matches.contains("schalosien runter")) {
-			communication.execute("Schalosien", "runter");
-		}
+	
+	@Override
+	protected void onResume() 
+	{
+		_controller.onResume();
+		super.onResume();
 	}
 
 	@Override
@@ -76,6 +34,5 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-
 
 }

@@ -8,7 +8,23 @@ import android.speech.RecognitionListener;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
 
-public class ObservableRecognitionListener extends Observable implements RecognitionListener {
+public class ObservableRecognitionListener extends Observable implements
+		RecognitionListener {
+	private boolean speechEnded;
+	
+	public boolean hasSpeechEnded()
+	{
+		if(speechEnded)
+		{
+			speechEnded = false;
+			return true;
+		}
+		return false;
+	}
+
+	public ObservableRecognitionListener() {
+		speechEnded = false;
+	}
 
 	@Override
 	public void onBeginningOfSpeech() {
@@ -26,45 +42,50 @@ public class ObservableRecognitionListener extends Observable implements Recogni
 
 	@Override
 	public void onEndOfSpeech() {
-		// TODO Auto-generated method stub
 		Log.d("my", "onEndOfSpeech");
 	}
 
 	@Override
 	public void onError(int error) {
+		String errorMessage;
 		switch (error) {
 		case 1:
-			Log.d("ERROR", "Network operation timed out.");
+			errorMessage = "Network operation timed out.";
 			break;
 		case 2:
-			Log.d("ERROR", "Other network related errors.");
+			errorMessage = "Other network related errors.";
 			break;
 		case 3:
-			Log.d("ERROR", "Audio recording error.");
+			errorMessage = "Audio recording error.";
 			break;
 		case 4:
-			Log.d("ERROR", "Server sends error status.");
+			errorMessage = "Server sends error status.";
 			break;
 		case 5:
-			Log.d("ERROR", "Other client side errors.");
+			errorMessage = "Other client side errors.";
 			break;
 		case 6:
-			Log.d("ERROR", "No speech input");
+			errorMessage ="No speech input";
 			break;
 		case 7:
-			Log.d("ERROR", "No recognition result matched. ");
+			errorMessage ="No recognition result matched.";
 			break;
 		case 8:
-			Log.d("ERROR", "RecognitionService busy.");
+			errorMessage ="RecognitionService busy.";
 			break;
 		case 9:
-			Log.d("ERROR", "Insufficient permissions");
+			errorMessage ="Insufficient permissions";
 			break;
 
 		default:
-			Log.d("ERROR", "Unknown Error ");
+			errorMessage ="Unknown Error ";
 			break;
 		}
+		speechEnded = true;
+		setChanged();
+		this.notifyObservers(errorMessage);
+		clearChanged();
+		
 
 	}
 
@@ -92,7 +113,10 @@ public class ObservableRecognitionListener extends Observable implements Recogni
 		ArrayList<String> temp = results
 				.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
 		Log.d("my", "onResults");
+		speechEnded = true;
+		setChanged();
 		this.notifyObservers(temp);
+		clearChanged();
 	}
 
 	@Override
