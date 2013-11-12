@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
+import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
+import android.os.Build;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
@@ -16,11 +19,20 @@ public class Controller implements Observer {
 	private ObservableRecognitionListener _speechListener;
 	private Intent _speechRecognitionIntent;
 	private MainActivity _mainView;
+	private AudioManager _audioManager;
+	private boolean _buzzWordRecognized;
 
 	public Controller(MainActivity View) {
 		_mainView = View;
+		_buzzWordRecognized = false;
 		_speechListener = new ObservableRecognitionListener();
 		_speechListener.addObserver(this);
+		_audioManager = (AudioManager) _mainView
+				.getSystemService(Context.AUDIO_SERVICE);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+			// turn off beep sound
+			_audioManager.setStreamMute(AudioManager.STREAM_SYSTEM, true);
+		}
 		_mainView.getWindow().setFlags(
 				WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
 				WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -28,18 +40,27 @@ public class Controller implements Observer {
 
 	private void matchStrings(ArrayList<String> matches) {
 		AsyncHttpCommunication communication = new AsyncHttpCommunication();
-		if (matches.contains("Licht aus")) {
-			communication.execute("Lampe", "aus");
-		} else if (matches.contains("Licht an")) {
-			communication.execute("Lampe", "an");
-		} else if (matches.contains("Kaffee an")) {
-			communication.execute("Kaffee", "an");
-		} else if (matches.contains("Kaffee aus")) {
-			communication.execute("Kaffee", "aus");
-		} else if (matches.contains("schalosien hoch")) {
-			communication.execute("Schalosien", "hoch");
-		} else if (matches.contains("schalosien runter")) {
-			communication.execute("Schalosien", "runter");
+
+		if (matches.contains("okay Zuhause")) {
+			_mainView.buzzWordRcognized();
+			_buzzWordRecognized = true;
+			_audioManager.playSoundEffect(AudioManager.FX_KEY_CLICK);
+		}
+		else if (_buzzWordRecognized) {
+			if (matches.contains("Licht aus")) {
+				communication.execute("Lampe", "aus");
+			} else if (matches.contains("Licht an")) {
+				communication.execute("Lampe", "an");
+			} else if (matches.contains("Kaffee an")) {
+				communication.execute("Kaffee", "an");
+			} else if (matches.contains("Kaffee aus")) {
+				communication.execute("Kaffee", "aus");
+			} else if (matches.contains("schalosien hoch")) {
+				communication.execute("Schalosien", "hoch");
+			} else if (matches.contains("schalosien runter")) {
+				communication.execute("Schalosien", "runter");
+			}
+			_buzzWordRecognized = false;
 		}
 	}
 
@@ -72,11 +93,10 @@ public class Controller implements Observer {
 				@SuppressWarnings("unchecked")
 				ArrayList<String> temp = (ArrayList<String>) data;
 				matchStrings(temp);
-			}
-			else if(data instanceof String)
-			{
+			} else if (data instanceof String) {
 				String errorMessage = (String) data;
 				Log.d("ERROR", errorMessage);
+				_buzzWordRecognized = false;
 			}
 		}
 		if (_speechListener.hasSpeechEnded())

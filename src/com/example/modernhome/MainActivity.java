@@ -39,6 +39,11 @@ public class MainActivity extends Activity {
 		_controller.onResume();
 		super.onResume();
 	}
+	
+	public void buzzWordRcognized()
+	{
+		
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
