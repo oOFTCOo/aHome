@@ -7,6 +7,7 @@ import java.util.Observer;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Build;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -21,9 +22,13 @@ public class Controller implements Observer {
 	private MainActivity _mainView;
 	private AudioManager _audioManager;
 	private boolean _buzzWordRecognized;
+	private SoundPool _soundPool;
+	private int _sound;
 
 	public Controller(MainActivity View) {
 		_mainView = View;
+		_soundPool = new SoundPool(1, AudioManager.STREAM_ALARM, 0);
+		_sound = _soundPool.load(_mainView, R.raw.ding, 1);
 		_buzzWordRecognized = false;
 		_speechListener = new ObservableRecognitionListener();
 		_speechListener.addObserver(this);
@@ -44,7 +49,9 @@ public class Controller implements Observer {
 		if (matches.contains("okay Zuhause")) {
 			_mainView.buzzWordRcognized();
 			_buzzWordRecognized = true;
-			_audioManager.playSoundEffect(AudioManager.FX_KEY_CLICK);
+			//_audioManager.playSoundEffect(AudioManager.FX_FOCUS_NAVIGATION_UP, 100);		
+			_soundPool.play(_sound, 1, 1, 1, 0, 1);
+			_sound = _soundPool.load(_mainView, R.raw.ding, 1);
 		}
 		else if (_buzzWordRecognized) {
 			if (matches.contains("Licht aus")) {
@@ -79,6 +86,7 @@ public class Controller implements Observer {
 			_speechRecognitionIntent.putExtra(
 					RecognizerIntent.EXTRA_LANGUAGE_MODEL,
 					RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+			_speechRecognitionIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 10);
 			_speechRecognitionIntent.putExtra(
 					RecognizerIntent.EXTRA_CALLING_PACKAGE,
 					"com.example.modernhome");
