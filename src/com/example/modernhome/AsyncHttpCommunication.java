@@ -15,6 +15,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 public class AsyncHttpCommunication extends AsyncTask<String, Void, HttpResponse> {
 
@@ -22,6 +23,7 @@ public class AsyncHttpCommunication extends AsyncTask<String, Void, HttpResponse
 	private HttpPost _httpPost;
 	private HttpResponse _response;
 	private String _adress = "http://ahome.social-butler.de/commands.php";
+    
 
 	public AsyncHttpCommunication() {
 		_client = new DefaultHttpClient();
@@ -55,7 +57,8 @@ public class AsyncHttpCommunication extends AsyncTask<String, Void, HttpResponse
 	@Override
 	protected HttpResponse doInBackground(String... params) {
 		HttpPost(params[0], params[1]);
-		return _response;
+        Log.d("aHome",_response.toString());
+        return _response;
 	}
 
 }

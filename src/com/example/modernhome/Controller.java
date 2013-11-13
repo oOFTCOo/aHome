@@ -12,6 +12,7 @@ import android.os.Build;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 
 public class Controller implements Observer {
@@ -47,7 +48,7 @@ public class Controller implements Observer {
 		AsyncHttpCommunication communication = new AsyncHttpCommunication();
 
 		if (matches.contains("okay Zuhause")) {
-			_mainView.buzzWordRcognized();
+			_mainView.buzzWordRecognized();
 			_buzzWordRecognized = true;
 			//_audioManager.playSoundEffect(AudioManager.FX_FOCUS_NAVIGATION_UP, 100);		
 			_soundPool.play(_sound, 1, 1, 1, 0, 1);
@@ -56,16 +57,40 @@ public class Controller implements Observer {
 		else if (_buzzWordRecognized) {
 			if (matches.contains("Licht aus")) {
 				communication.execute("Lampe", "aus");
+                _mainView.executeText.setText("Schalte Licht aus");
+                _mainView.executeText.setVisibility(View.VISIBLE);
+                _mainView.okText.setVisibility(View.INVISIBLE);
+
 			} else if (matches.contains("Licht an")) {
 				communication.execute("Lampe", "an");
+                _mainView.executeText.setText("Schalte Licht ein");
+                _mainView.executeText.setVisibility(View.VISIBLE);
+                _mainView.okText.setVisibility(View.INVISIBLE);
+
 			} else if (matches.contains("Kaffee an")) {
 				communication.execute("Kaffee", "an");
+                _mainView.executeText.setText("Schalte Kaffemaschine an");
+                _mainView.executeText.setVisibility(View.VISIBLE);
+                _mainView.okText.setVisibility(View.INVISIBLE);
+
 			} else if (matches.contains("Kaffee aus")) {
 				communication.execute("Kaffee", "aus");
+                _mainView.executeText.setText("Schalte Kaffemaschine aus");
+                _mainView.executeText.setVisibility(View.VISIBLE);
+                _mainView.okText.setVisibility(View.INVISIBLE);
+
 			} else if (matches.contains("schalosien hoch")) {
 				communication.execute("Schalosien", "hoch");
+                _mainView.executeText.setText("Fahre Schalosien hoch");
+                _mainView.executeText.setVisibility(View.VISIBLE);
+                _mainView.okText.setVisibility(View.INVISIBLE);
+
 			} else if (matches.contains("schalosien runter")) {
 				communication.execute("Schalosien", "runter");
+                _mainView.executeText.setText("Fahre Schalosien runter");
+                _mainView.executeText.setVisibility(View.VISIBLE);
+                _mainView.okText.setVisibility(View.INVISIBLE);
+
 			}
 			_buzzWordRecognized = false;
 		}
