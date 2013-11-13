@@ -3,15 +3,21 @@ package com.example.modernhome;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.Window;
 import android.view.WindowManager;
 import android.content.pm.ActivityInfo;
+import android.widget.TextView;
+import android.view.View;
 
 
 public class MainActivity extends Activity {
 	
 	private Controller _controller;
+    private TextView anweisungText;
+    public TextView okText;
+    public TextView executeText;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +30,9 @@ public class MainActivity extends Activity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_main);
 
+        anweisungText = (TextView)findViewById(R.id.textView);
+        okText = (TextView)findViewById(R.id.textView2);
+        executeText = (TextView)findViewById(R.id.textView3);
 		_controller = new Controller(this); 
 	}
 	
@@ -40,8 +49,13 @@ public class MainActivity extends Activity {
 		super.onResume();
 	}
 	
-	public void buzzWordRcognized()
+	public void buzzWordRecognized()
 	{
+
+        Log.d("Daniel","Buzz");
+        anweisungText.setVisibility(View.INVISIBLE);
+        okText.setVisibility(View.VISIBLE);
+
 		
 	}
 
