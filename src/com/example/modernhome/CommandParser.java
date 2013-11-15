@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * @author pm
  */
 public class CommandParser {
-	private static boolean TO_LOWER_CASE = true;
+	private static boolean TO_LOWER_CASE = false;
 	private DeviceParser parser;
 	private ArrayList<String> groups;
 
