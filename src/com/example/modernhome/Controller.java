@@ -54,31 +54,31 @@ public class Controller implements Observer {
 		else if (_buzzWordRecognized) {
 			if (matches.contains("Licht aus")) {
                 _mainView.executeText.setText("Schalte Licht aus");
-                _mainView.commandRecognized();
 				communication.execute("Lampe", "aus");
+                _mainView.commandRecognized();
 			} else if (matches.contains("Licht an")) {
-				communication.execute("Lampe", "an");
                 _mainView.executeText.setText("Schalte Licht ein");
+                communication.execute("Lampe", "an");
                 _mainView.commandRecognized();
 
 			} else if (matches.contains("Kaffee an")) {
-				communication.execute("Kaffee", "an");
                 _mainView.executeText.setText("Schalte Kaffemaschine an");
+				communication.execute("Kaffee", "an");
                 _mainView.commandRecognized();
 
 			} else if (matches.contains("Kaffee aus")) {
-				communication.execute("Kaffee", "aus");
                 _mainView.executeText.setText("Schalte Kaffemaschine aus");
+                communication.execute("Kaffee", "aus");
                 _mainView.commandRecognized();
 
 			} else if (matches.contains("schalosien hoch")) {
-				communication.execute("Schalosien", "hoch");
                 _mainView.executeText.setText("Fahre Schalosien hoch");
+                communication.execute("Schalosien", "hoch");
                 _mainView.commandRecognized();
 
 			} else if (matches.contains("schalosien runter")) {
-				communication.execute("Schalosien", "runter");
                 _mainView.executeText.setText("Fahre Schalosien runter");
+                communication.execute("Schalosien", "runter");
                 _mainView.commandRecognized();
 
 			}

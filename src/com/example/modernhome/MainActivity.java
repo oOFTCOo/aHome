@@ -116,6 +116,7 @@ public class MainActivity extends Activity {
             anweisungText.setVisibility(View.VISIBLE);
             okText.setVisibility(View.INVISIBLE);
             executeText.setVisibility(View.INVISIBLE);
+            _controller._buzzWordRecognized=false;
             // might want to change "executed" for the returned string passed
             // into onPostExecute() but that is upto you
         }
