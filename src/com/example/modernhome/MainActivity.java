@@ -3,10 +3,12 @@ package com.example.modernhome;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.Menu;
 import android.view.Window;
 import android.view.WindowManager;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.widget.TextView;
 import android.view.View;
@@ -33,6 +35,8 @@ public class MainActivity extends Activity {
         anweisungText = (TextView)findViewById(R.id.textView);
         okText = (TextView)findViewById(R.id.textView2);
         executeText = (TextView)findViewById(R.id.textView3);
+        Intent ttsIntent = new Intent(this, TTS.class);
+		startActivity(ttsIntent);
 		_controller = new Controller(this); 
 	}
 	

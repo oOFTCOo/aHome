@@ -1,6 +1,7 @@
 package com.example.modernhome;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -11,6 +12,7 @@ import android.media.SoundPool;
 import android.os.Build;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -25,6 +27,7 @@ public class Controller implements Observer {
 	private boolean _buzzWordRecognized;
 	private SoundPool _soundPool;
 	private int _sound;
+	private TextToSpeech _tts;
 
 	public Controller(MainActivity View) {
 		_mainView = View;
@@ -35,6 +38,9 @@ public class Controller implements Observer {
 		_speechListener.addObserver(this);
 		_audioManager = (AudioManager) _mainView
 				.getSystemService(Context.AUDIO_SERVICE);
+		_tts = new TextToSpeech(_mainView, new TTS());
+		_tts.setLanguage(Locale.GERMAN);
+        _tts.speak("test", TextToSpeech.QUEUE_FLUSH, null);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 			// turn off beep sound
 			_audioManager.setStreamMute(AudioManager.STREAM_SYSTEM, true);
@@ -98,6 +104,10 @@ public class Controller implements Observer {
 
 	public void onPause() {
 		_sr.destroy();
+		  if (_tts != null) {
+	            _tts.stop();
+	            _tts.shutdown();
+	        }
 	}
 
 	public void onResume() {
