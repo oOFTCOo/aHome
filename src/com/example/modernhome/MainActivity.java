@@ -1,72 +1,62 @@
 package com.example.modernhome;
 
-
 import android.os.Bundle;
 import android.app.Activity;
-import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.Menu;
 import android.view.Window;
 import android.view.WindowManager;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.widget.TextView;
 import android.view.View;
 
-
 public class MainActivity extends Activity {
-	
-	private static final int CHECK_TTS_AVAILABILITY = 1234;
+
 	private Controller _controller;
-    private TextView anweisungText;
-    public TextView okText;
-    public TextView executeText;
+	private TextView anweisungText;
+	public TextView okText;
+	public TextView executeText;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		// Set window fullscreen and remove title bar, and force landscape
+		// orientation
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		setContentView(R.layout.activity_main);
 
-        // Set window fullscreen and remove title bar, and force landscape orientation
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        setContentView(R.layout.activity_main);
-
-        anweisungText = (TextView)findViewById(R.id.textView);
-        okText = (TextView)findViewById(R.id.textView2);
-        executeText = (TextView)findViewById(R.id.textView3);
-        Intent ttsIntent = new Intent(this, TTS.class);
-		//startActivity(ttsIntent);
-    	Intent checkIntent = new Intent();
-		checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-		startActivityForResult(checkIntent, CHECK_TTS_AVAILABILITY);
-        
-		_controller = new Controller(this); 
-		
+		anweisungText = (TextView) findViewById(R.id.textView);
+		okText = (TextView) findViewById(R.id.textView2);
+		executeText = (TextView) findViewById(R.id.textView3);
+		// Intent ttsIntent = new Intent(this, TTS.class);
+		// startActivityForResult(ttsIntent, TTS_RESULT);
+		_controller = new Controller(this);
 	}
-	
+
 	@Override
 	protected void onPause() {
-		_controller.onPause();
+		if (_controller != null)
+			_controller.onPause();
 		super.onPause();
 	}
-	
+
 	@Override
-	protected void onResume() 
-	{
-		_controller.onResume();
+	protected void onResume() {
+		if (_controller != null)
+			_controller.onResume();
 		super.onResume();
 	}
-	
-	public void buzzWordRecognized()
-	{
 
-        Log.d("Daniel","Buzz");
-        anweisungText.setVisibility(View.INVISIBLE);
-        okText.setVisibility(View.VISIBLE);
+	public void buzzWordRecognized() {
 
-		
+		Log.d("Daniel", "Buzz");
+		anweisungText.setVisibility(View.INVISIBLE);
+		okText.setVisibility(View.VISIBLE);
+
 	}
 
 	@Override
@@ -74,24 +64,4 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-	
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == CHECK_TTS_AVAILABILITY) {
-			if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
-				// success, create the TTS instance
-//				_tts = new TextToSpeech(this, this);
-//				_result.putExtra("tts", new TextToSpeechParcel(_tts));
-//				setResult(Activity.RESULT_OK, _result);
-//				finish();
-			} else {
-				// missing data, install it
-				Intent installIntent = new Intent();
-				installIntent
-						.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
-				startActivity(installIntent);
-			}
-		}
-	}
-
 }
