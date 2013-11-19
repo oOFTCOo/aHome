@@ -8,8 +8,10 @@ import android.view.Menu;
 import android.view.Window;
 import android.view.WindowManager;
 import android.content.pm.ActivityInfo;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.view.View;
+import android.os.AsyncTask;
 
 
 public class MainActivity extends Activity {
@@ -18,6 +20,7 @@ public class MainActivity extends Activity {
     private TextView anweisungText;
     public TextView okText;
     public TextView executeText;
+    public ImageButton microBtn;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +36,26 @@ public class MainActivity extends Activity {
         anweisungText = (TextView)findViewById(R.id.textView);
         okText = (TextView)findViewById(R.id.textView2);
         executeText = (TextView)findViewById(R.id.textView3);
-		_controller = new Controller(this); 
+
+		_controller = new Controller(this);
+
+        addListenerOnButton();
 	}
+
+    public void addListenerOnButton() {
+
+        microBtn = (ImageButton) findViewById(R.id.imageButton);
+
+        microBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                buzzWordRecognized();
+            }
+        });
+
+
+
+    }
 	
 	@Override
 	protected void onPause() {
@@ -51,13 +72,23 @@ public class MainActivity extends Activity {
 	
 	public void buzzWordRecognized()
 	{
-
-        Log.d("Daniel","Buzz");
         anweisungText.setVisibility(View.INVISIBLE);
         okText.setVisibility(View.VISIBLE);
-
-		
+        _controller._buzzWordRecognized = true;
+        //_audioManager.playSoundEffect(AudioManager.FX_FOCUS_NAVIGATION_UP, 100);
+        _controller._soundPool.play(_controller._sound, 1, 1, 1, 0, 1);
+        _controller._sound = _controller._soundPool.load(_controller._mainView, R.raw.ding, 1);
 	}
+
+    public void commandRecognized()
+    {
+
+        okText.setVisibility(View.INVISIBLE);
+        executeText.setVisibility(View.VISIBLE);
+        _controller._soundPool.play(_controller._sound, 1, 1, 1, 0, 1);
+        _controller._sound = _controller._soundPool.load(_controller._mainView, R.raw.ding, 1);
+        new LongOperation().execute("");
+    }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -65,4 +96,34 @@ public class MainActivity extends Activity {
 		return true;
 	}
 
+    public class LongOperation extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            for (int i = 0; i < 5; i++) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return "Executed";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+            anweisungText.setVisibility(View.VISIBLE);
+            okText.setVisibility(View.INVISIBLE);
+            executeText.setVisibility(View.INVISIBLE);
+            // might want to change "executed" for the returned string passed
+            // into onPostExecute() but that is upto you
+        }
+
+        @Override
+        protected void onPreExecute() {}
+
+        @Override
+        protected void onProgressUpdate(Void... values) {}
+    }
 }

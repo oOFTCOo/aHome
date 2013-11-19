@@ -20,11 +20,11 @@ public class Controller implements Observer {
 	private SpeechRecognizer _sr;
 	private ObservableRecognitionListener _speechListener;
 	private Intent _speechRecognitionIntent;
-	private MainActivity _mainView;
-	private AudioManager _audioManager;
-	private boolean _buzzWordRecognized;
-	private SoundPool _soundPool;
-	private int _sound;
+	public MainActivity _mainView;
+    public AudioManager _audioManager;
+	public boolean _buzzWordRecognized;
+    public SoundPool _soundPool;
+    public int _sound;
 
 	public Controller(MainActivity View) {
 		_mainView = View;
@@ -49,47 +49,37 @@ public class Controller implements Observer {
 
 		if (matches.contains("okay Zuhause")) {
 			_mainView.buzzWordRecognized();
-			_buzzWordRecognized = true;
-			//_audioManager.playSoundEffect(AudioManager.FX_FOCUS_NAVIGATION_UP, 100);		
-			_soundPool.play(_sound, 1, 1, 1, 0, 1);
-			_sound = _soundPool.load(_mainView, R.raw.ding, 1);
+
 		}
 		else if (_buzzWordRecognized) {
 			if (matches.contains("Licht aus")) {
-				communication.execute("Lampe", "aus");
                 _mainView.executeText.setText("Schalte Licht aus");
-                _mainView.executeText.setVisibility(View.VISIBLE);
-                _mainView.okText.setVisibility(View.INVISIBLE);
-
+                _mainView.commandRecognized();
+				communication.execute("Lampe", "aus");
 			} else if (matches.contains("Licht an")) {
 				communication.execute("Lampe", "an");
                 _mainView.executeText.setText("Schalte Licht ein");
-                _mainView.executeText.setVisibility(View.VISIBLE);
-                _mainView.okText.setVisibility(View.INVISIBLE);
+                _mainView.commandRecognized();
 
 			} else if (matches.contains("Kaffee an")) {
 				communication.execute("Kaffee", "an");
                 _mainView.executeText.setText("Schalte Kaffemaschine an");
-                _mainView.executeText.setVisibility(View.VISIBLE);
-                _mainView.okText.setVisibility(View.INVISIBLE);
+                _mainView.commandRecognized();
 
 			} else if (matches.contains("Kaffee aus")) {
 				communication.execute("Kaffee", "aus");
                 _mainView.executeText.setText("Schalte Kaffemaschine aus");
-                _mainView.executeText.setVisibility(View.VISIBLE);
-                _mainView.okText.setVisibility(View.INVISIBLE);
+                _mainView.commandRecognized();
 
 			} else if (matches.contains("schalosien hoch")) {
 				communication.execute("Schalosien", "hoch");
                 _mainView.executeText.setText("Fahre Schalosien hoch");
-                _mainView.executeText.setVisibility(View.VISIBLE);
-                _mainView.okText.setVisibility(View.INVISIBLE);
+                _mainView.commandRecognized();
 
 			} else if (matches.contains("schalosien runter")) {
 				communication.execute("Schalosien", "runter");
                 _mainView.executeText.setText("Fahre Schalosien runter");
-                _mainView.executeText.setVisibility(View.VISIBLE);
-                _mainView.okText.setVisibility(View.INVISIBLE);
+                _mainView.commandRecognized();
 
 			}
 			_buzzWordRecognized = false;
