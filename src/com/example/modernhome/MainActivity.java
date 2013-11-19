@@ -16,6 +16,7 @@ import android.view.View;
 
 public class MainActivity extends Activity {
 	
+	private static final int CHECK_TTS_AVAILABILITY = 1234;
 	private Controller _controller;
     private TextView anweisungText;
     public TextView okText;
@@ -36,8 +37,13 @@ public class MainActivity extends Activity {
         okText = (TextView)findViewById(R.id.textView2);
         executeText = (TextView)findViewById(R.id.textView3);
         Intent ttsIntent = new Intent(this, TTS.class);
-		startActivity(ttsIntent);
+		//startActivity(ttsIntent);
+    	Intent checkIntent = new Intent();
+		checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+		startActivityForResult(checkIntent, CHECK_TTS_AVAILABILITY);
+        
 		_controller = new Controller(this); 
+		
 	}
 	
 	@Override
@@ -67,6 +73,25 @@ public class MainActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == CHECK_TTS_AVAILABILITY) {
+			if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
+				// success, create the TTS instance
+//				_tts = new TextToSpeech(this, this);
+//				_result.putExtra("tts", new TextToSpeechParcel(_tts));
+//				setResult(Activity.RESULT_OK, _result);
+//				finish();
+			} else {
+				// missing data, install it
+				Intent installIntent = new Intent();
+				installIntent
+						.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+				startActivity(installIntent);
+			}
+		}
 	}
 
 }
