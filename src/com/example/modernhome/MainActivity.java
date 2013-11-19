@@ -1,6 +1,5 @@
 package com.example.modernhome;
 
-
 import android.os.Bundle;
 import android.app.Activity;
 import android.util.Log;
@@ -13,20 +12,33 @@ import android.widget.TextView;
 import android.view.View;
 import android.os.AsyncTask;
 
-
 public class MainActivity extends Activity {
-	
+
 	private Controller _controller;
+<<<<<<< HEAD
     private TextView anweisungText;
     public TextView okText;
     public TextView executeText;
     public ImageButton microBtn;
+=======
+	private TextView anweisungText;
+	public TextView okText;
+	public TextView executeText;
+>>>>>>> refs/heads/feature_tts2
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		// Set window fullscreen and remove title bar, and force landscape
+		// orientation
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		setContentView(R.layout.activity_main);
 
+<<<<<<< HEAD
         // Set window fullscreen and remove title bar, and force landscape orientation
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -40,8 +52,17 @@ public class MainActivity extends Activity {
 		_controller = new Controller(this);
 
         addListenerOnButton();
+=======
+		anweisungText = (TextView) findViewById(R.id.textView);
+		okText = (TextView) findViewById(R.id.textView2);
+		executeText = (TextView) findViewById(R.id.textView3);
+		// Intent ttsIntent = new Intent(this, TTS.class);
+		// startActivityForResult(ttsIntent, TTS_RESULT);
+		_controller = new Controller(this);
+>>>>>>> refs/heads/feature_tts2
 	}
 
+<<<<<<< HEAD
     public void addListenerOnButton() {
 
         microBtn = (ImageButton) findViewById(R.id.imageButton);
@@ -57,18 +78,22 @@ public class MainActivity extends Activity {
 
     }
 	
+=======
+>>>>>>> refs/heads/feature_tts2
 	@Override
 	protected void onPause() {
-		_controller.onPause();
+		if (_controller != null)
+			_controller.onPause();
 		super.onPause();
 	}
-	
+
 	@Override
-	protected void onResume() 
-	{
-		_controller.onResume();
+	protected void onResume() {
+		if (_controller != null)
+			_controller.onResume();
 		super.onResume();
 	}
+<<<<<<< HEAD
 	
 	public void buzzWordRecognized()
 	{
@@ -78,6 +103,15 @@ public class MainActivity extends Activity {
         //_audioManager.playSoundEffect(AudioManager.FX_FOCUS_NAVIGATION_UP, 100);
         _controller._soundPool.play(_controller._sound, 1, 1, 1, 0, 1);
         _controller._sound = _controller._soundPool.load(_controller._mainView, R.raw.ding, 1);
+=======
+
+	public void buzzWordRecognized() {
+
+		Log.d("Daniel", "Buzz");
+		anweisungText.setVisibility(View.INVISIBLE);
+		okText.setVisibility(View.VISIBLE);
+
+>>>>>>> refs/heads/feature_tts2
 	}
 
     public void commandRecognized()
@@ -95,6 +129,7 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
+<<<<<<< HEAD
 
     public class LongOperation extends AsyncTask<String, Void, String> {
 
@@ -127,4 +162,6 @@ public class MainActivity extends Activity {
         @Override
         protected void onProgressUpdate(Void... values) {}
     }
+=======
+>>>>>>> refs/heads/feature_tts2
 }

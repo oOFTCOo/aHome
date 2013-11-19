@@ -28,13 +28,25 @@ public class Controller implements Observer {
 
 	public Controller(MainActivity View) {
 		_mainView = View;
+		init();
+	}
+	
+	private void say(String text)
+	{
+		Intent tts = new Intent(_mainView, TTS.class);
+		tts.putExtra(Intent.EXTRA_TEXT, text);
+		_mainView.startActivity(tts);		
+	}
+	
+	private void init()
+	{
 		_soundPool = new SoundPool(1, AudioManager.STREAM_ALARM, 0);
 		_sound = _soundPool.load(_mainView, R.raw.ding, 1);
 		_buzzWordRecognized = false;
 		_speechListener = new ObservableRecognitionListener();
 		_speechListener.addObserver(this);
 		_audioManager = (AudioManager) _mainView
-				.getSystemService(Context.AUDIO_SERVICE);
+				.getSystemService(Context.AUDIO_SERVICE);		
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 			// turn off beep sound
 			_audioManager.setStreamMute(AudioManager.STREAM_SYSTEM, true);
@@ -42,6 +54,7 @@ public class Controller implements Observer {
 		_mainView.getWindow().setFlags(
 				WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
 				WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		
 	}
 
 	private void matchStrings(ArrayList<String> matches) {
