@@ -40,8 +40,6 @@ public class MainActivity extends Activity {
 		anweisungText = (TextView) findViewById(R.id.textView);
 		okText = (TextView) findViewById(R.id.textView2);
 		executeText = (TextView) findViewById(R.id.textView3);
-		// Intent ttsIntent = new Intent(this, TTS.class);
-		// startActivityForResult(ttsIntent, TTS_RESULT);
 		_controller = new Controller(this);
 	}
 

@@ -40,14 +40,11 @@ public class AsyncHttpCommunication extends AsyncTask<String, Void, HttpResponse
 				_httpPost.setEntity(new UrlEncodedFormEntity(pairs));
 				_response = _client.execute(_httpPost);
 			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
  catch (ClientProtocolException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 

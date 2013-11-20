@@ -51,7 +51,6 @@ public class TTS extends Activity implements TextToSpeech.OnInitListener {
 
 	@Override
 	public void onInit(int status) {
-		// TODO Auto-generated method stub
 		if (status == TextToSpeech.SUCCESS) {
 
 			int result = _tts.setLanguage(Locale.US);
