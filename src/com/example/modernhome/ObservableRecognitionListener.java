@@ -3,7 +3,9 @@ package com.example.modernhome;
 import java.util.ArrayList;
 import java.util.Observable;
 
+import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.speech.RecognitionListener;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
@@ -29,9 +31,26 @@ public class ObservableRecognitionListener extends Observable implements
 	@Override
 	public void onBeginningOfSpeech() {
 		// TODO Auto-generated method stub
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+			noSpeechCountdown.cancel();
 		Log.d("my", "onBeginningOfSpeech");
 
 	}
+	
+	private CountDownTimer noSpeechCountdown = new CountDownTimer(5000, 5000) {
+		
+		@Override
+		public void onTick(long millisUntilFinished) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		@Override
+		public void onFinish() {
+			notifyObservers();
+			
+		}
+	};
 
 	@Override
 	public void onBufferReceived(byte[] buffer) {
@@ -47,6 +66,8 @@ public class ObservableRecognitionListener extends Observable implements
 
 	@Override
 	public void onError(int error) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+			noSpeechCountdown.cancel();
 		String errorMessage;
 		switch (error) {
 		case 1:
@@ -103,7 +124,8 @@ public class ObservableRecognitionListener extends Observable implements
 
 	@Override
 	public void onReadyForSpeech(Bundle params) {
-		// TODO Auto-generated method stub
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+			noSpeechCountdown.start();
 		Log.d("my", "onReadyForSpeech");
 	}
 

@@ -8,7 +8,7 @@ import java.net.URLConnection;
 import android.os.AsyncTask;
 
 public class AsyncConfigReader extends AsyncTask<String, Void, DeviceParser> {
-	private DeviceParser _parser;
+	private DeviceParser _deviceParser;
 
 	private void readConfig(String path) {
 		String configPath = path;
@@ -16,7 +16,7 @@ public class AsyncConfigReader extends AsyncTask<String, Void, DeviceParser> {
 		try {
 			configUrl = new URL(configPath);
 			URLConnection connection = configUrl.openConnection();
-			_parser = new DeviceParser(connection.getInputStream());
+			_deviceParser = new DeviceParser(connection.getInputStream());
 
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
@@ -33,7 +33,7 @@ public class AsyncConfigReader extends AsyncTask<String, Void, DeviceParser> {
 		if (params.length == 1) {
 			String path = params[0];
 			readConfig(path);
-			return _parser;
+			return _deviceParser;
 		}
 		return null;
 	}

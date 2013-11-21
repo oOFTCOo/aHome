@@ -16,11 +16,28 @@ public class TTS extends Activity implements TextToSpeech.OnInitListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 		Intent checkIntent = new Intent();
 		checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
 		startActivityForResult(checkIntent, CHECK_TTS_AVAILABILITY);
+		super.onCreate(savedInstanceState);
+
 	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+	};
+	
+	@Override
+	protected void onPause()
+	{
+		if(_tts != null)
+		{
+		_tts.stop();
+		_tts.shutdown();
+		}
+		super.onPause();
+	};
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {

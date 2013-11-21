@@ -1,10 +1,5 @@
 package com.example.modernhome;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -25,36 +20,36 @@ public class Controller implements Observer {
 	private SpeechRecognizer _sr;
 	private ObservableRecognitionListener _speechListener;
 	private Intent _speechRecognitionIntent;
-	private DeviceParser _parser;
+	private DeviceParser _deviceParser;
+	private CommandParser _commandParser;
 	public MainActivity _mainView;
-    public AudioManager _audioManager;
+	public AudioManager _audioManager;
 	public boolean _buzzWordRecognized;
-    public SoundPool _soundPool;
-    public int _sound;
+	public SoundPool _soundPool;
+	public int _sound;
 
 	public Controller(MainActivity View) {
 		_mainView = View;
 		init();
 	}
-	
-	private void say(String text)
-	{
+
+	private void say(String text) {
 		Intent tts = new Intent(_mainView, TTS.class);
 		tts.putExtra(Intent.EXTRA_TEXT, text);
-		_mainView.startActivity(tts);		
+		_mainView.startActivity(tts);
 	}
-	
-	
-	private void init()
-	{
+
+	private void init() {
 		_soundPool = new SoundPool(1, AudioManager.STREAM_ALARM, 0);
 		_sound = _soundPool.load(_mainView, R.raw.ding, 1);
 		_buzzWordRecognized = false;
 		_speechListener = new ObservableRecognitionListener();
 		_speechListener.addObserver(this);
-		//readConfig();
 		try {
-			_parser = new AsyncConfigReader().execute("http://ahome.social-butler.de/config.xml").get();
+			_deviceParser = new AsyncConfigReader().execute(
+					"http://ahome.social-butler.de/config.xml").get();
+			_commandParser = new CommandParser(_deviceParser);
+			//boolean test = _commandParser.existsLocationDeviceStatus("main", "Lampe", "an");
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -63,7 +58,7 @@ public class Controller implements Observer {
 			e.printStackTrace();
 		}
 		_audioManager = (AudioManager) _mainView
-				.getSystemService(Context.AUDIO_SERVICE);		
+				.getSystemService(Context.AUDIO_SERVICE);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 			// turn off beep sound
 			_audioManager.setStreamMute(AudioManager.STREAM_SYSTEM, true);
@@ -71,7 +66,7 @@ public class Controller implements Observer {
 		_mainView.getWindow().setFlags(
 				WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
 				WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-		
+
 	}
 
 	private void matchStrings(ArrayList<String> matches) {
@@ -80,42 +75,41 @@ public class Controller implements Observer {
 		if (matches.contains("okay Zuhause")) {
 			_mainView.buzzWordRecognized();
 
-		}
-		else if (_buzzWordRecognized) {
+		} else if (_buzzWordRecognized) {
 			if (matches.contains("Licht aus")) {
-                _mainView.executeText.setText("Schalte Licht aus");
-                say("Schalte Licht aus");
+				say("Schalte Licht aus");
+				_mainView.executeText.setText("Schalte Licht aus");
 				communication.execute("Lampe_Badezimmer", "aus");
-                _mainView.commandRecognized();
+				_mainView.commandRecognized();
 			} else if (matches.contains("Licht an")) {
-                _mainView.executeText.setText("Schalte Licht ein");
-                say("Schalte Licht ein");
-                communication.execute("Lampe_Badezimmer", "an");
-                _mainView.commandRecognized();
+				say("Schalte Licht ein");
+				_mainView.executeText.setText("Schalte Licht ein");
+				communication.execute("Lampe_Badezimmer", "an");
+				_mainView.commandRecognized();
 
 			} else if (matches.contains("Kaffee an")) {
-                _mainView.executeText.setText("Schalte Kaffemaschine an");
-                say("Schalte Kaffemaschine an");
+				say("Schalte Kaffemaschine an");
+				_mainView.executeText.setText("Schalte Kaffemaschine an");
 				communication.execute("Kaffee_Kueche", "an");
-                _mainView.commandRecognized();
+				_mainView.commandRecognized();
 
 			} else if (matches.contains("Kaffee aus")) {
-                _mainView.executeText.setText("Schalte Kaffemaschine aus");
-                say("Schalte Kaffemaschine aus");
-                communication.execute("Kaffee_Kueche", "aus");
-                _mainView.commandRecognized();
+				say("Schalte Kaffemaschine aus");
+				_mainView.executeText.setText("Schalte Kaffemaschine aus");
+				communication.execute("Kaffee_Kueche", "aus");
+				_mainView.commandRecognized();
 
 			} else if (matches.contains("schalosien hoch")) {
-                _mainView.executeText.setText("Fahre Schalosien hoch");
-                say("Fahre Schalosien hoch");
-                communication.execute("Schalosien_Schlafzimmer", "hoch");
-                _mainView.commandRecognized();
+				say("Fahre Schalosien hoch");
+				_mainView.executeText.setText("Fahre Schalosien hoch");
+				communication.execute("Schalosien_Schlafzimmer", "hoch");
+				_mainView.commandRecognized();
 
 			} else if (matches.contains("schalosien runter")) {
-                _mainView.executeText.setText("Fahre Schalosien runter");
-                say("Fahre Schalosien runter");
-                communication.execute("Schalosien_Schlafzimmer", "runter");
-                _mainView.commandRecognized();
+				say("Fahre Schalosien runter");
+				_mainView.executeText.setText("Fahre Schalosien runter");
+				communication.execute("Schalosien_Schlafzimmer", "runter");
+				_mainView.commandRecognized();
 
 			}
 			_buzzWordRecognized = false;
@@ -137,7 +131,10 @@ public class Controller implements Observer {
 			_speechRecognitionIntent.putExtra(
 					RecognizerIntent.EXTRA_LANGUAGE_MODEL,
 					RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-			_speechRecognitionIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 10);
+			_speechRecognitionIntent
+					.putExtra(
+							RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS,
+							10);
 			_speechRecognitionIntent.putExtra(
 					RecognizerIntent.EXTRA_CALLING_PACKAGE,
 					"com.example.modernhome");
