@@ -25,6 +25,8 @@ public class Controller implements Observer {
 	public MainActivity _mainView;
 	public AudioManager _audioManager;
 	public boolean _buzzWordRecognized;
+    private String objektErkannt;
+    private String objektStatusErkannt;
 	public SoundPool _soundPool;
 	public int _sound;
 
@@ -69,50 +71,57 @@ public class Controller implements Observer {
 
 	}
 
-	private void matchStrings(ArrayList<String> matches) {
-		AsyncHttpCommunication communication = new AsyncHttpCommunication();
+    public void sendHttpRequest() {
 
-		if (matches.contains("okay Zuhause")) {
+        AsyncHttpCommunication communication = new AsyncHttpCommunication();
+        communication.execute(objektErkannt, objektStatusErkannt);
+    }
+
+	private void matchStrings(ArrayList<String> matches) {
+
+
+		if ((matches.contains("okay Zuhause")||matches.contains("okay Zuhause")||matches.contains("okay zuhause an")||matches.contains("okay zu hause")||matches.contains("okay zu Hause"))&&_buzzWordRecognized==false) {
 			_mainView.buzzWordRecognized();
 
 		} else if (_buzzWordRecognized) {
 			if (matches.contains("Licht aus")) {
-				say("Schalte Licht aus");
-				_mainView.executeText.setText("Schalte Licht aus");
-				communication.execute("Lampe_Badezimmer", "aus");
-				_mainView.commandRecognized();
+                objektErkannt = "Lampe_Badezimmer";
+                objektStatusErkannt = "aus";
+                _mainView.executeText.setText("Schalte Licht im Badezimmer aus");
+                _mainView.commandRecognized();
+                say("Schalte Licht im Badezimmer aus");
 			} else if (matches.contains("Licht an")) {
-				say("Schalte Licht ein");
-				_mainView.executeText.setText("Schalte Licht ein");
-				communication.execute("Lampe_Badezimmer", "an");
-				_mainView.commandRecognized();
-
+                objektErkannt = "Lampe_Badezimmer";
+                objektStatusErkannt = "an";
+                _mainView.executeText.setText("Schalte Licht im Badezimmer an");
+                _mainView.commandRecognized();
+                say("Schalte Licht im Badezimmer an");
 			} else if (matches.contains("Kaffee an")) {
-				say("Schalte Kaffemaschine an");
-				_mainView.executeText.setText("Schalte Kaffemaschine an");
-				communication.execute("Kaffee_Kueche", "an");
-				_mainView.commandRecognized();
-
+                objektErkannt = "Kaffee_Kueche";
+                objektStatusErkannt = "an";
+                _mainView.executeText.setText("Schalte Kaffemaschine in Küche an");
+                _mainView.commandRecognized();
+                say("Schalte Kaffemaschine in Küche an");
 			} else if (matches.contains("Kaffee aus")) {
-				say("Schalte Kaffemaschine aus");
-				_mainView.executeText.setText("Schalte Kaffemaschine aus");
-				communication.execute("Kaffee_Kueche", "aus");
-				_mainView.commandRecognized();
-
+                objektErkannt = "Kaffee_Kueche";
+                objektStatusErkannt = "aus";
+                _mainView.executeText.setText("Schalte Kaffemaschine in Küche aus");
+                _mainView.commandRecognized();
+                say("Schalte Kaffemaschine in Küche aus");
 			} else if (matches.contains("schalosien hoch")) {
-				say("Fahre Schalosien hoch");
-				_mainView.executeText.setText("Fahre Schalosien hoch");
-				communication.execute("Schalosien_Schlafzimmer", "hoch");
-				_mainView.commandRecognized();
-
+                objektErkannt = "Schalosien_Schlafzimmer";
+                objektStatusErkannt = "hoch";
+                _mainView.executeText.setText("Fahre Schalosien im Schlafzimmer hoch");
+                _mainView.commandRecognized();
+                say("Fahre Schalosien im Schlafzimmer hoch");
 			} else if (matches.contains("schalosien runter")) {
-				say("Fahre Schalosien runter");
-				_mainView.executeText.setText("Fahre Schalosien runter");
-				communication.execute("Schalosien_Schlafzimmer", "runter");
-				_mainView.commandRecognized();
-
+                objektErkannt = "Schalosien_Schlafzimmer";
+                objektStatusErkannt = "runter";
+                _mainView.executeText.setText("Fahre Schalosien im Schlafzimmer runter");
+                _mainView.commandRecognized();
+                say("Fahre Schalosien im Schlafzimmer runter");
 			}
-			_buzzWordRecognized = false;
+
 		}
 	}
 
@@ -133,8 +142,8 @@ public class Controller implements Observer {
 					RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
 			_speechRecognitionIntent
 					.putExtra(
-							RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS,
-							10);
+                            RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS,
+                            10);
 			_speechRecognitionIntent.putExtra(
 					RecognizerIntent.EXTRA_CALLING_PACKAGE,
 					"com.example.modernhome");

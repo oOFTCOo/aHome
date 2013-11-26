@@ -6,18 +6,23 @@ import android.view.Menu;
 import android.view.Window;
 import android.view.WindowManager;
 import android.content.pm.ActivityInfo;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.view.View;
-import android.os.AsyncTask;
+import android.os.CountDownTimer;
 
 public class MainActivity extends Activity {
 
 	private Controller _controller;
     private TextView anweisungText;
     public TextView okText;
-    public TextView executeText;
+
+    public TextView countdownLabel;
     public ImageButton microBtn;
+    public Button cancelBtn;
+    public Button bestaetigenBtn;
+    public TextView executeText;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,17 +38,18 @@ public class MainActivity extends Activity {
         okText = (TextView)findViewById(R.id.textView2);
         executeText = (TextView)findViewById(R.id.textView3);
 
+        cancelBtn = (Button) findViewById(R.id.button);
+        bestaetigenBtn = (Button) findViewById(R.id.button2);
+        countdownLabel = (TextView) findViewById(R.id.textView4);
 		_controller = new Controller(this);
 
-        addListenerOnButton();
+        addListenerOnOKButton();
+        addListenerOnbestaetigenButton();
+        addListenerOncancelButton();
 
-		anweisungText = (TextView) findViewById(R.id.textView);
-		okText = (TextView) findViewById(R.id.textView2);
-		executeText = (TextView) findViewById(R.id.textView3);
-		_controller = new Controller(this);
 	}
 
-    public void addListenerOnButton() {
+    public void addListenerOnOKButton() {
 
         microBtn = (ImageButton) findViewById(R.id.imageButton);
 
@@ -53,9 +59,30 @@ public class MainActivity extends Activity {
                 buzzWordRecognized();
             }
         });
+    }
+
+    public void addListenerOnbestaetigenButton() {
 
 
 
+        bestaetigenBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendCommand();
+            }
+        });
+    }
+
+    public void addListenerOncancelButton() {
+
+
+
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cancelCommand();
+            }
+        });
     }
 	@Override
 	protected void onPause() {
@@ -73,12 +100,17 @@ public class MainActivity extends Activity {
 	
 	public void buzzWordRecognized()
 	{
+        if(_controller._buzzWordRecognized==false)
+        {
+
+
         anweisungText.setVisibility(View.INVISIBLE);
         okText.setVisibility(View.VISIBLE);
         _controller._buzzWordRecognized = true;
         //_audioManager.playSoundEffect(AudioManager.FX_FOCUS_NAVIGATION_UP, 100);
         _controller._soundPool.play(_controller._sound, 1, 1, 1, 0, 1);
         _controller._sound = _controller._soundPool.load(_controller._mainView, R.raw.ding, 1);
+        }
 
 	}
 
@@ -89,44 +121,70 @@ public class MainActivity extends Activity {
         executeText.setVisibility(View.VISIBLE);
         _controller._soundPool.play(_controller._sound, 1, 1, 1, 0, 1);
         _controller._sound = _controller._soundPool.load(_controller._mainView, R.raw.ding, 1);
-        new LongOperation().execute("");
+
+
+        cancelBtn.setVisibility(View.VISIBLE);
+        bestaetigenBtn.setVisibility(View.VISIBLE);
+        countdownLabel.setVisibility(View.VISIBLE);
+
+        // counter bis neuer command verstanden werden kann
+
+
+        new CountDownTimer(5000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                final int j = (int) millisUntilFinished;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        countdownLabel.setText(String.valueOf(Math.round(j/1000d)-1));
+                    }
+                });
+            }
+
+            public void onFinish() {
+                sendCommand();
+            }
+        }.start();
     }
 
-	@Override
+    public void sendCommand()
+    {
+
+        cancelBtn.setVisibility(View.INVISIBLE);
+        bestaetigenBtn.setVisibility(View.INVISIBLE);
+        countdownLabel.setVisibility(View.INVISIBLE);
+
+        anweisungText.setVisibility(View.VISIBLE);
+        okText.setVisibility(View.INVISIBLE);
+        executeText.setVisibility(View.INVISIBLE);
+        _controller._buzzWordRecognized=false;
+
+        _controller.sendHttpRequest();
+
+    }
+
+
+    public void cancelCommand()
+    {
+
+        cancelBtn.setVisibility(View.INVISIBLE);
+        bestaetigenBtn.setVisibility(View.INVISIBLE);
+        countdownLabel.setVisibility(View.INVISIBLE);
+
+        anweisungText.setVisibility(View.VISIBLE);
+        okText.setVisibility(View.INVISIBLE);
+        executeText.setVisibility(View.INVISIBLE);
+        _controller._buzzWordRecognized=false;
+
+    }
+
+
+    @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
-    public class LongOperation extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            for (int i = 0; i < 5; i++) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            return "Executed";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-
-            anweisungText.setVisibility(View.VISIBLE);
-            okText.setVisibility(View.INVISIBLE);
-            executeText.setVisibility(View.INVISIBLE);
-            _controller._buzzWordRecognized=false;
-            // might want to change "executed" for the returned string passed
-            // into onPostExecute() but that is upto you
-        }
-
-        @Override
-        protected void onPreExecute() {}
-
-        @Override
-        protected void onProgressUpdate(Void... values) {}
-    }
 }
