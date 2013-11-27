@@ -27,6 +27,7 @@ public class Controller implements Observer {
 	public boolean _buzzWordRecognized;
 	public SoundPool _soundPool;
 	public int _sound;
+	public boolean readyForListning = true;
 
 	public Controller(MainActivity View) {
 		_mainView = View;
@@ -36,7 +37,8 @@ public class Controller implements Observer {
 	private void say(String text) {
 		Intent tts = new Intent(_mainView, TTS.class);
 		tts.putExtra(Intent.EXTRA_TEXT, text);
-		_mainView.startActivity(tts);
+		readyForListning = false;
+		_mainView.startActivityForResult(tts, 1234);
 	}
 
 	private void init() {
@@ -46,16 +48,19 @@ public class Controller implements Observer {
 		_speechListener = new ObservableRecognitionListener();
 		_speechListener.addObserver(this);
 		try {
-			_deviceParser = new AsyncConfigReader().execute(
+			AsyncConfigReader acr = new AsyncConfigReader();
+			acr.execute(
 					"http://ahome.social-butler.de/config.xml").get();
+			_deviceParser = acr.get();
 			_commandParser = new CommandParser(_deviceParser);
 			//boolean test = _commandParser.existsLocationDeviceStatus("main", "Lampe", "an");
 		} catch (InterruptedException e) {
+			Log.d("ERROR", e.getMessage());
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		} catch (ExecutionException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.d("ERROR", e.getMessage());
 		}
 		_audioManager = (AudioManager) _mainView
 				.getSystemService(Context.AUDIO_SERVICE);
@@ -153,9 +158,11 @@ public class Controller implements Observer {
 				String errorMessage = (String) data;
 				Log.d("ERROR", errorMessage);
 				_buzzWordRecognized = false;
+				if (_speechListener.hasSpeechEnded() && readyForListning)
+					_sr.startListening(_speechRecognitionIntent);
 			}
 		}
-		if (_speechListener.hasSpeechEnded())
+		if (_speechListener.hasSpeechEnded() && readyForListning)
 			_sr.startListening(_speechRecognitionIntent);
 
 	}

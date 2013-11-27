@@ -30,7 +30,6 @@ public class ObservableRecognitionListener extends Observable implements
 
 	@Override
 	public void onBeginningOfSpeech() {
-		// TODO Auto-generated method stub
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
 			noSpeechCountdown.cancel();
 		Log.d("my", "onBeginningOfSpeech");

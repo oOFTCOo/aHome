@@ -69,6 +69,7 @@ public class TTS extends Activity implements TextToSpeech.OnInitListener {
 	@Override
 	public void onInit(int status) {
 		if (status == TextToSpeech.SUCCESS) {
+			getIntent().putExtra("tts", true);
 
 			int result = _tts.setLanguage(Locale.US);
 
@@ -85,6 +86,7 @@ public class TTS extends Activity implements TextToSpeech.OnInitListener {
 
 		} else {
 			Log.e("TTS", "Initilization Failed!");
+			getIntent().putExtra("tts", true);
 		}
 	}
 

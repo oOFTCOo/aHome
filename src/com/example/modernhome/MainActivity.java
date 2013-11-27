@@ -29,12 +29,6 @@ public class MainActivity extends Activity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_main);
 
-        anweisungText = (TextView)findViewById(R.id.textView);
-        okText = (TextView)findViewById(R.id.textView2);
-        executeText = (TextView)findViewById(R.id.textView3);
-
-		_controller = new Controller(this);
-
         addListenerOnButton();
 
 		anweisungText = (TextView) findViewById(R.id.textView);
@@ -69,6 +63,16 @@ public class MainActivity extends Activity {
 		if (_controller != null)
 			_controller.onResume();
 		super.onResume();
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, android.content.Intent data) 
+	{
+		if(resultCode == 1234)
+		{
+			_controller.readyForListning = true;
+			_controller.notify();
+		}
 	}
 	
 	public void buzzWordRecognized()
