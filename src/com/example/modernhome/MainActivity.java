@@ -108,7 +108,6 @@ public class MainActivity extends Activity {
 		}
 	}
 
->>>>>>> refs/remotes/origin/master
 	public void buzzWordRecognized()
 	{
         if(_controller._buzzWordRecognized==false)
