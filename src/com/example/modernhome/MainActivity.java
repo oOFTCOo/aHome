@@ -41,7 +41,8 @@ public class MainActivity extends Activity {
         cancelBtn = (Button) findViewById(R.id.button);
         bestaetigenBtn = (Button) findViewById(R.id.button2);
         countdownLabel = (TextView) findViewById(R.id.textView4);
-		_controller = new Controller(this);
+        if(_controller == null)
+        	_controller = new Controller(this);
 
         addListenerOnOKButton();
         addListenerOnbestaetigenButton();
@@ -57,6 +58,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View view) {
                 buzzWordRecognized();
+                _controller.restartListening();
             }
         });
     }
@@ -119,7 +121,7 @@ public class MainActivity extends Activity {
         _controller._buzzWordRecognized = true;
         //_audioManager.playSoundEffect(AudioManager.FX_FOCUS_NAVIGATION_UP, 100);
         _controller._soundPool.play(_controller._sound, 1, 1, 1, 0, 1);
-        _controller._sound = _controller._soundPool.load(_controller._mainView, R.raw.ding, 1);
+        _controller._sound = _controller._soundPool.load(this, R.raw.ding, 1);
         }
 
 	}
@@ -130,7 +132,7 @@ public class MainActivity extends Activity {
         okText.setVisibility(View.INVISIBLE);
         executeText.setVisibility(View.VISIBLE);
         _controller._soundPool.play(_controller._sound, 1, 1, 1, 0, 1);
-        _controller._sound = _controller._soundPool.load(_controller._mainView, R.raw.ding, 1);
+        _controller._sound = _controller._soundPool.load(this, R.raw.ding, 1);
 
 
         cancelBtn.setVisibility(View.VISIBLE);

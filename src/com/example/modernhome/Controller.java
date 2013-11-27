@@ -22,7 +22,7 @@ public class Controller implements Observer {
 	private Intent _speechRecognitionIntent;
 	private DeviceParser _deviceParser;
 	private CommandParser _commandParser;
-	public MainActivity _mainView;
+	private MainActivity _mainView;
 	public AudioManager _audioManager;
 	public boolean _buzzWordRecognized;
     private String objektErkannt;
@@ -49,25 +49,25 @@ public class Controller implements Observer {
 		_buzzWordRecognized = false;
 		_speechListener = new ObservableRecognitionListener();
 		_speechListener.addObserver(this);
-		try {
-			AsyncConfigReader acr = new AsyncConfigReader();
-			acr.execute(
-					"http://ahome.social-butler.de/config.xml").get();
-			_deviceParser = acr.get();
-			_commandParser = new CommandParser(_deviceParser);
-			//boolean test = _commandParser.existsLocationDeviceStatus("main", "Lampe", "an");
-		} catch (InterruptedException e) {
-			Log.d("ERROR", e.getMessage());
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			Log.d("ERROR", e.getMessage());
-		}
+//		try {
+//			AsyncConfigReader acr = new AsyncConfigReader();
+//			acr.execute(
+//					"http://ahome.social-butler.de/config.xml").get();
+//			_deviceParser = acr.get();
+//			_commandParser = new CommandParser(_deviceParser);
+//			//boolean test = _commandParser.existsLocationDeviceStatus("main", "Lampe", "an");
+//		} catch (InterruptedException e) {
+//			Log.d("ERROR", e.getMessage());
+//			// TODO Auto-generated catch block
+//			//e.printStackTrace();
+//		} catch (ExecutionException e) {
+//			// TODO Auto-generated catch block
+//			Log.d("ERROR", e.getMessage());
+//		}
 		_audioManager = (AudioManager) _mainView
 				.getSystemService(Context.AUDIO_SERVICE);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-			// turn off beep sound
+			// turn off beep soundController
 			_audioManager.setStreamMute(AudioManager.STREAM_SYSTEM, true);
 		}
 		_mainView.getWindow().setFlags(
@@ -80,6 +80,11 @@ public class Controller implements Observer {
 
         AsyncHttpCommunication communication = new AsyncHttpCommunication();
         communication.execute(objektErkannt, objektStatusErkannt);
+    }
+    public void restartListening()
+    {
+    	_sr.stopListening();
+    	_sr.startListening(_speechRecognitionIntent);
     }
 
 	private void matchStrings(ArrayList<String> matches) {
