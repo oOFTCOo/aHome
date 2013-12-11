@@ -21,9 +21,9 @@ public class CommandParser {
 	 * @param location	Literal location.
 	 * @param device	Literal device.
 	 * @param status	Literal status.
-	 * @return	Whether or not the combination of the specified arguments exists.
+	 * @return	Returns the device id if triple was found, if not it returns null;
 	 */
-	public boolean existsLocationDeviceStatus(String location, String device, String status) {
+	public String existsLocationDeviceStatus(String location, String device, String status) {
 		if(TO_LOWER_CASE) {
 			location = location.toLowerCase();
 			device = device.toLowerCase();
@@ -31,7 +31,7 @@ public class CommandParser {
 		}
 		
 		if(! groups.contains(location))
-			return false;
+			return null;
 
 		// Traverse devices of specified location, i. e. group.
 		// We assume that the group attribute equals the location.
@@ -47,11 +47,11 @@ public class CommandParser {
 				}
 			} catch (NullPointerException e) {
 				e.printStackTrace();
-				return false;
+				return null;
 			}
 		}
 		if(! found)
-			return false;
+			return null;
 
 		// Check states of device
 		ArrayList<String> states = parser.getStatesOfDevice(deviceId);
@@ -59,15 +59,15 @@ public class CommandParser {
 			try {
 				String name = parser.getStateName(item);
 				if(name.equals(status)) {
-					return true;
+					return deviceId;
 				}
 			} catch (NullPointerException e) {
 				e.printStackTrace();
-				return false;
+				return null;
 			}
 		}
 
 		// Combination not found.
-		return false;
+		return null;
 	}
 }

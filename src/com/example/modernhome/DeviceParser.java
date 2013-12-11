@@ -22,12 +22,14 @@ public class DeviceParser {
 	private ArrayList<String> groups;
 	private HashMap<String,String> alterTriggers;
 	private HashMap<String,String> queryTriggers;
+	private ArrayList<Device> listOfDevices;
 
 	public DeviceParser(InputStream is) {
 		super();
 		groups = new ArrayList<String>();
 		alterTriggers = new HashMap<String,String>();
 		queryTriggers = new HashMap<String,String>();
+		listOfDevices = new ArrayList<Device>();
 		init(is);
 	}
 
@@ -108,6 +110,26 @@ public class DeviceParser {
 		}
 
 		return groups;
+	}
+	
+	public ArrayList<Device> getDevices() {
+		NodeList nodes = queryNodes("//device");
+		if(nodes == null) {
+			return null;
+		}
+
+		for(int i = 0; i < nodes.getLength(); i++) {
+			NamedNodeMap attr = nodes.item(i).getAttributes();
+			String groupName = attr.getNamedItem("group").getNodeValue();
+			String deviceId = attr.getNamedItem("id").getNodeValue();
+			String deviceName = attr.getNamedItem("name").getNodeValue();
+			ArrayList<String> deviceStateIds = this.getStatesOfDevice(deviceId);
+				
+			
+			listOfDevices.add(new Device(deviceId, deviceName, groupName, deviceStateIds));
+		}
+
+		return listOfDevices;
 	}
 	
 	/**

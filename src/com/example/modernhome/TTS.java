@@ -22,22 +22,7 @@ public class TTS extends Activity implements TextToSpeech.OnInitListener {
 		super.onCreate(savedInstanceState);
 
 	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-	};
 	
-	@Override
-	protected void onPause()
-	{
-		if(_tts != null)
-		{
-		_tts.stop();
-		_tts.shutdown();
-		}
-		super.onPause();
-	};
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -57,21 +42,13 @@ public class TTS extends Activity implements TextToSpeech.OnInitListener {
 		}
 	}
 
-	@Override
-	public void onDestroy() {
-		if (_tts != null) {
-			_tts.stop();
-			_tts.shutdown();
-		}
-		super.onDestroy();
-	}
 
 	@Override
 	public void onInit(int status) {
 		if (status == TextToSpeech.SUCCESS) {
 			getIntent().putExtra("tts", true);
 
-			int result = _tts.setLanguage(Locale.US);
+			int result = _tts.setLanguage(Locale.GERMAN);
 
 			if (result == TextToSpeech.LANG_MISSING_DATA
 					|| result == TextToSpeech.LANG_NOT_SUPPORTED) {
@@ -88,6 +65,7 @@ public class TTS extends Activity implements TextToSpeech.OnInitListener {
 			Log.e("TTS", "Initilization Failed!");
 			getIntent().putExtra("tts", true);
 		}
+		_tts.shutdown();
 	}
 
 }

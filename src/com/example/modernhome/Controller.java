@@ -1,9 +1,12 @@
 package com.example.modernhome;
 
+import java.net.ResponseCache;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.ExecutionException;
+
+import org.apache.http.HttpResponse;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,26 +23,24 @@ public class Controller implements Observer {
 	private SpeechRecognizer _sr;
 	private ObservableRecognitionListener _speechListener;
 	private Intent _speechRecognitionIntent;
-	private DeviceParser _deviceParser;
-	private CommandParser _commandParser;
 	private MainActivity _mainView;
 	public AudioManager _audioManager;
 	public boolean _buzzWordRecognized;
-    private String objektErkannt;
-    private String objektStatusErkannt;
+	private String _commandHttp;
 	public SoundPool _soundPool;
+	private StringMatcher _matchResults;
 	public int _sound;
-	public boolean readyForListning = true;
 
 	public Controller(MainActivity View) {
-		_mainView = View;
-		init();
+		if (_mainView == null) {
+			_mainView = View;
+			init();
+		}
 	}
 
 	private void say(String text) {
 		Intent tts = new Intent(_mainView, TTS.class);
 		tts.putExtra(Intent.EXTRA_TEXT, text);
-		readyForListning = false;
 		_mainView.startActivityForResult(tts, 1234);
 	}
 
@@ -49,21 +50,7 @@ public class Controller implements Observer {
 		_buzzWordRecognized = false;
 		_speechListener = new ObservableRecognitionListener();
 		_speechListener.addObserver(this);
-//		try {
-//			AsyncConfigReader acr = new AsyncConfigReader();
-//			acr.execute(
-//					"http://ahome.social-butler.de/config.xml").get();
-//			_deviceParser = acr.get();
-//			_commandParser = new CommandParser(_deviceParser);
-//			//boolean test = _commandParser.existsLocationDeviceStatus("main", "Lampe", "an");
-//		} catch (InterruptedException e) {
-//			Log.d("ERROR", e.getMessage());
-//			// TODO Auto-generated catch block
-//			//e.printStackTrace();
-//		} catch (ExecutionException e) {
-//			// TODO Auto-generated catch block
-//			Log.d("ERROR", e.getMessage());
-//		}
+		_matchResults = new StringMatcher();
 		_audioManager = (AudioManager) _mainView
 				.getSystemService(Context.AUDIO_SERVICE);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -76,60 +63,48 @@ public class Controller implements Observer {
 
 	}
 
-    public void sendHttpRequest() {
+	public void sendHttpRequest() {
 
-        AsyncHttpCommunication communication = new AsyncHttpCommunication();
-        communication.execute(objektErkannt, objektStatusErkannt);
-    }
-    public void restartListening()
-    {
-    	_sr.stopListening();
-    	_sr.startListening(_speechRecognitionIntent);
-    }
+		int status = 0;
+		AsyncHttpCommunication communication = new AsyncHttpCommunication();
+		try {
+			HttpResponse response = communication.execute(_commandHttp).get();
+			status = response.getStatusLine().getStatusCode();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Log.d("HttpCode", String.valueOf(status));
+		if (_speechListener.hasSpeechEnded())
+			_sr.startListening(_speechRecognitionIntent);
+	}
 
 	private void matchStrings(ArrayList<String> matches) {
 
-
-		if ((matches.contains("okay Zuhause")||matches.contains("okay Zuhause")||matches.contains("okay zuhause an")||matches.contains("okay zu hause")||matches.contains("okay zu Hause"))&&_buzzWordRecognized==false) {
+		if ((matches.contains("okay Zuhause")
+				|| matches.contains("okay Zuhause")
+				|| matches.contains("okay zuhause an")
+				|| matches.contains("okay zu hause") || matches
+					.contains("okay zu Hause")) && _buzzWordRecognized == false) {
 			_mainView.buzzWordRecognized();
+			if (_speechListener.hasSpeechEnded())
+				_sr.startListening(_speechRecognitionIntent);
 
 		} else if (_buzzWordRecognized) {
-			if (matches.contains("Licht aus")) {
-                objektErkannt = "Lampe_Badezimmer";
-                objektStatusErkannt = "aus";
-                _mainView.executeText.setText("Schalte Licht im Badezimmer aus");
-                _mainView.commandRecognized();
-                say("Schalte Licht im Badezimmer aus");
-			} else if (matches.contains("Licht an")) {
-                objektErkannt = "Lampe_Badezimmer";
-                objektStatusErkannt = "an";
-                _mainView.executeText.setText("Schalte Licht im Badezimmer an");
-                _mainView.commandRecognized();
-                say("Schalte Licht im Badezimmer an");
-			} else if (matches.contains("Kaffee an")) {
-                objektErkannt = "Kaffee_Kueche";
-                objektStatusErkannt = "an";
-                _mainView.executeText.setText("Schalte Kaffemaschine in Küche an");
-                _mainView.commandRecognized();
-                say("Schalte Kaffemaschine in Küche an");
-			} else if (matches.contains("Kaffee aus")) {
-                objektErkannt = "Kaffee_Kueche";
-                objektStatusErkannt = "aus";
-                _mainView.executeText.setText("Schalte Kaffemaschine in Küche aus");
-                _mainView.commandRecognized();
-                say("Schalte Kaffemaschine in Küche aus");
-			} else if (matches.contains("schalosien hoch")) {
-                objektErkannt = "Schalosien_Schlafzimmer";
-                objektStatusErkannt = "hoch";
-                _mainView.executeText.setText("Fahre Schalosien im Schlafzimmer hoch");
-                _mainView.commandRecognized();
-                say("Fahre Schalosien im Schlafzimmer hoch");
-			} else if (matches.contains("schalosien runter")) {
-                objektErkannt = "Schalosien_Schlafzimmer";
-                objektStatusErkannt = "runter";
-                _mainView.executeText.setText("Fahre Schalosien im Schlafzimmer runter");
-                _mainView.commandRecognized();
-                say("Fahre Schalosien im Schlafzimmer runter");
+			String[] results = _matchResults.getCommand(matches);
+			if (results != null) {
+				_mainView.executeText.setText("test");
+				say("test");
+				_commandHttp = results[0];
+				_mainView.commandRecognized();
+			}
+			else
+			{
+				if (_speechListener.hasSpeechEnded())
+					_sr.startListening(_speechRecognitionIntent);
 			}
 
 		}
@@ -152,8 +127,8 @@ public class Controller implements Observer {
 					RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
 			_speechRecognitionIntent
 					.putExtra(
-                            RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS,
-                            10);
+							RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS,
+							10);
 			_speechRecognitionIntent.putExtra(
 					RecognizerIntent.EXTRA_CALLING_PACKAGE,
 					"com.example.modernhome");
@@ -172,11 +147,10 @@ public class Controller implements Observer {
 				String errorMessage = (String) data;
 				Log.d("ERROR", errorMessage);
 				_buzzWordRecognized = false;
-				if (_speechListener.hasSpeechEnded() && readyForListning)
-					_sr.startListening(_speechRecognitionIntent);
+				_mainView.ErrorTextView.setText(errorMessage);
 			}
 		}
-		if (_speechListener.hasSpeechEnded() && readyForListning)
+		else if (_speechListener.hasSpeechEnded())
 			_sr.startListening(_speechRecognitionIntent);
 
 	}

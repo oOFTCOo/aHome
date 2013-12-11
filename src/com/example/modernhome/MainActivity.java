@@ -23,6 +23,7 @@ public class MainActivity extends Activity {
     public Button cancelBtn;
     public Button bestaetigenBtn;
     public TextView executeText;
+    public TextView ErrorTextView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,7 @@ public class MainActivity extends Activity {
         cancelBtn = (Button) findViewById(R.id.button);
         bestaetigenBtn = (Button) findViewById(R.id.button2);
         countdownLabel = (TextView) findViewById(R.id.textView4);
+        ErrorTextView = (TextView) findViewById(R.id.ErrorMessage);
         if(_controller == null)
         	_controller = new Controller(this);
 
@@ -58,7 +60,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View view) {
                 buzzWordRecognized();
-                _controller.restartListening();
+                
             }
         });
     }
@@ -105,7 +107,6 @@ public class MainActivity extends Activity {
 	{
 		if(resultCode == 1234)
 		{
-			_controller.readyForListning = true;
 			_controller.notify();
 		}
 	}
