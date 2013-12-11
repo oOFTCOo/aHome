@@ -1,6 +1,5 @@
 package com.example.modernhome;
 
-import java.net.ResponseCache;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -100,9 +99,7 @@ public class Controller implements Observer {
 				say("test");
 				_commandHttp = results[0];
 				_mainView.commandRecognized();
-			}
-			else
-			{
+			} else {
 				if (_speechListener.hasSpeechEnded())
 					_sr.startListening(_speechRecognitionIntent);
 			}
@@ -110,11 +107,11 @@ public class Controller implements Observer {
 		}
 	}
 
-	public void onPause() {
+	public void onStop() {
 		_sr.destroy();
 	}
 
-	public void onResume() {
+	public void onStart() {
 		if (SpeechRecognizer.isRecognitionAvailable(_mainView
 				.getApplicationContext())) {
 			_sr = SpeechRecognizer.createSpeechRecognizer(_mainView
@@ -146,11 +143,18 @@ public class Controller implements Observer {
 			} else if (data instanceof String) {
 				String errorMessage = (String) data;
 				Log.d("ERROR", errorMessage);
-				_buzzWordRecognized = false;
+				//_buzzWordRecognized = false;
 				_mainView.ErrorTextView.setText(errorMessage);
+				if(errorMessage == "RecognitionService busy.")
+				{
+					_sr.stopListening();
+				}
+				//if (_speechListener.hasSpeechEnded())
+				while(!_speechListener.hasSpeechEnded())
+					;
+					_sr.startListening(_speechRecognitionIntent);
 			}
-		}
-		else if (_speechListener.hasSpeechEnded())
+		} else if (_speechListener.hasSpeechEnded())
 			_sr.startListening(_speechRecognitionIntent);
 
 	}

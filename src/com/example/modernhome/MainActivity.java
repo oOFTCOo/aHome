@@ -15,186 +15,179 @@ import android.os.CountDownTimer;
 public class MainActivity extends Activity {
 
 	private Controller _controller;
-    private TextView anweisungText;
-    public TextView okText;
+	private TextView anweisungText;
+	public TextView okText;
 
-    public TextView countdownLabel;
-    public ImageButton microBtn;
-    public Button cancelBtn;
-    public Button bestaetigenBtn;
-    public TextView executeText;
-    public TextView ErrorTextView;
+	public TextView countdownLabel;
+	public ImageButton microBtn;
+	public Button cancelBtn;
+	public Button bestaetigenBtn;
+	public TextView executeText;
+	public TextView ErrorTextView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-        // Set window fullscreen and remove title bar, and force landscape orientation
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        setContentView(R.layout.activity_main);
+		// Set window fullscreen and remove title bar, and force landscape
+		// orientation
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		setContentView(R.layout.activity_main);
 
-        anweisungText = (TextView)findViewById(R.id.textView);
-        okText = (TextView)findViewById(R.id.textView2);
-        executeText = (TextView)findViewById(R.id.textView3);
+		anweisungText = (TextView) findViewById(R.id.textView);
+		okText = (TextView) findViewById(R.id.textView2);
+		executeText = (TextView) findViewById(R.id.textView3);
 
-        cancelBtn = (Button) findViewById(R.id.button);
-        bestaetigenBtn = (Button) findViewById(R.id.button2);
-        countdownLabel = (TextView) findViewById(R.id.textView4);
-        ErrorTextView = (TextView) findViewById(R.id.ErrorMessage);
-        if(_controller == null)
-        	_controller = new Controller(this);
+		cancelBtn = (Button) findViewById(R.id.button);
+		bestaetigenBtn = (Button) findViewById(R.id.button2);
+		countdownLabel = (TextView) findViewById(R.id.textView4);
+		ErrorTextView = (TextView) findViewById(R.id.ErrorMessage);
+		if (_controller == null)
+			_controller = new Controller(this);
 
-        addListenerOnOKButton();
-        addListenerOnbestaetigenButton();
-        addListenerOncancelButton();
+		addListenerOnOKButton();
+		addListenerOnbestaetigenButton();
+		addListenerOncancelButton();
 
 	}
 
-    public void addListenerOnOKButton() {
+	public void addListenerOnOKButton() {
 
-        microBtn = (ImageButton) findViewById(R.id.imageButton);
+		microBtn = (ImageButton) findViewById(R.id.imageButton);
 
-        microBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                buzzWordRecognized();
-                
-            }
-        });
-    }
+		microBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				buzzWordRecognized();
 
-    public void addListenerOnbestaetigenButton() {
+			}
+		});
+	}
 
+	public void addListenerOnbestaetigenButton() {
 
+		bestaetigenBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				sendCommand();
+			}
+		});
+	}
 
-        bestaetigenBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendCommand();
-            }
-        });
-    }
+	public void addListenerOncancelButton() {
 
-    public void addListenerOncancelButton() {
+		cancelBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				cancelCommand();
+			}
+		});
+	}
 
-
-
-        cancelBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                cancelCommand();
-            }
-        });
-    }
+	// @Override
+	// protected void onPause() {
 	@Override
-	protected void onPause() {
+	protected void onStop() {
 		if (_controller != null)
-			_controller.onPause();
+			_controller.onStop();
 		super.onPause();
 	}
 
+	 @Override
+	 protected void onStart() {
+	 if (_controller != null)
+	 _controller.onStart();
+	 super.onResume();
+	 }
+
 	@Override
-	protected void onResume() {
-		if (_controller != null)
-			_controller.onResume();
-		super.onResume();
-	}
-	
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, android.content.Intent data) 
-	{
-		if(resultCode == 1234)
-		{
+	protected void onActivityResult(int requestCode, int resultCode,
+			android.content.Intent data) {
+		if (resultCode == 1234) {
 			_controller.notify();
 		}
 	}
 
-	public void buzzWordRecognized()
-	{
-        if(_controller._buzzWordRecognized==false)
-        {
+	public void buzzWordRecognized() {
+		if (_controller._buzzWordRecognized == false) {
 
-
-        anweisungText.setVisibility(View.INVISIBLE);
-        okText.setVisibility(View.VISIBLE);
-        _controller._buzzWordRecognized = true;
-        //_audioManager.playSoundEffect(AudioManager.FX_FOCUS_NAVIGATION_UP, 100);
-        _controller._soundPool.play(_controller._sound, 1, 1, 1, 0, 1);
-        _controller._sound = _controller._soundPool.load(this, R.raw.ding, 1);
-        }
+			anweisungText.setVisibility(View.INVISIBLE);
+			okText.setVisibility(View.VISIBLE);
+			_controller._buzzWordRecognized = true;
+			// _audioManager.playSoundEffect(AudioManager.FX_FOCUS_NAVIGATION_UP,
+			// 100);
+			_controller._soundPool.play(_controller._sound, 1, 1, 1, 0, 1);
+			_controller._sound = _controller._soundPool.load(this, R.raw.ding,
+					1);
+		}
 
 	}
 
-    public void commandRecognized()
-    {
+	public void commandRecognized() {
 
-        okText.setVisibility(View.INVISIBLE);
-        executeText.setVisibility(View.VISIBLE);
-        _controller._soundPool.play(_controller._sound, 1, 1, 1, 0, 1);
-        _controller._sound = _controller._soundPool.load(this, R.raw.ding, 1);
+		okText.setVisibility(View.INVISIBLE);
+		executeText.setVisibility(View.VISIBLE);
+		_controller._soundPool.play(_controller._sound, 1, 1, 1, 0, 1);
+		_controller._sound = _controller._soundPool.load(this, R.raw.ding, 1);
 
+		cancelBtn.setVisibility(View.VISIBLE);
+		bestaetigenBtn.setVisibility(View.VISIBLE);
+		countdownLabel.setVisibility(View.VISIBLE);
 
-        cancelBtn.setVisibility(View.VISIBLE);
-        bestaetigenBtn.setVisibility(View.VISIBLE);
-        countdownLabel.setVisibility(View.VISIBLE);
+		// counter bis neuer command verstanden werden kann
 
-        // counter bis neuer command verstanden werden kann
+		new CountDownTimer(5000, 1000) {
 
+			public void onTick(long millisUntilFinished) {
+				final int j = (int) millisUntilFinished;
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
 
-        new CountDownTimer(5000, 1000) {
+						countdownLabel.setText(String.valueOf(Math
+								.round(j / 1000d) - 1));
+					}
+				});
+			}
 
-            public void onTick(long millisUntilFinished) {
-                final int j = (int) millisUntilFinished;
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
+			public void onFinish() {
+				sendCommand();
+			}
+		}.start();
+	}
 
-                        countdownLabel.setText(String.valueOf(Math.round(j/1000d)-1));
-                    }
-                });
-            }
+	public void sendCommand() {
 
-            public void onFinish() {
-                sendCommand();
-            }
-        }.start();
-    }
+		cancelBtn.setVisibility(View.INVISIBLE);
+		bestaetigenBtn.setVisibility(View.INVISIBLE);
+		countdownLabel.setVisibility(View.INVISIBLE);
 
-    public void sendCommand()
-    {
+		anweisungText.setVisibility(View.VISIBLE);
+		okText.setVisibility(View.INVISIBLE);
+		executeText.setVisibility(View.INVISIBLE);
+		_controller._buzzWordRecognized = false;
 
-        cancelBtn.setVisibility(View.INVISIBLE);
-        bestaetigenBtn.setVisibility(View.INVISIBLE);
-        countdownLabel.setVisibility(View.INVISIBLE);
+		_controller.sendHttpRequest();
 
-        anweisungText.setVisibility(View.VISIBLE);
-        okText.setVisibility(View.INVISIBLE);
-        executeText.setVisibility(View.INVISIBLE);
-        _controller._buzzWordRecognized=false;
+	}
 
-        _controller.sendHttpRequest();
+	public void cancelCommand() {
 
-    }
+		cancelBtn.setVisibility(View.INVISIBLE);
+		bestaetigenBtn.setVisibility(View.INVISIBLE);
+		countdownLabel.setVisibility(View.INVISIBLE);
 
+		anweisungText.setVisibility(View.VISIBLE);
+		okText.setVisibility(View.INVISIBLE);
+		executeText.setVisibility(View.INVISIBLE);
+		_controller._buzzWordRecognized = false;
 
-    public void cancelCommand()
-    {
+	}
 
-        cancelBtn.setVisibility(View.INVISIBLE);
-        bestaetigenBtn.setVisibility(View.INVISIBLE);
-        countdownLabel.setVisibility(View.INVISIBLE);
-
-        anweisungText.setVisibility(View.VISIBLE);
-        okText.setVisibility(View.INVISIBLE);
-        executeText.setVisibility(View.INVISIBLE);
-        _controller._buzzWordRecognized=false;
-
-    }
-
-
-    @Override
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
