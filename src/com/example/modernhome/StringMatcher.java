@@ -33,7 +33,7 @@ public class StringMatcher {
 		String stateId;
 		if (_deviceIdtoState.containsKey(deviceId + saResult[2])) {
 			stateId = _deviceIdtoState.get(deviceId + saResult[2]);
-			return new String[]{_deviceParser.getStateAction(stateId)};
+			return new String[]{_deviceParser.getStateAction(stateId), _deviceParser.getStateInquiry(stateId)};
 		}
 
 		return null;

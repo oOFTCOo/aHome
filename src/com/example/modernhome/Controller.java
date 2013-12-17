@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
+import android.os.CountDownTimer;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
@@ -77,8 +78,15 @@ public class Controller implements Observer {
 			e.printStackTrace();
 		}
 		Log.d("HttpCode", String.valueOf(status));
-		if (_speechListener.hasSpeechEnded())
-			_sr.startListening(_speechRecognitionIntent);
+		while (!_speechListener.hasSpeechEnded()) {
+			try {
+				Thread.sleep(100, 0);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		_sr.startListening(_speechRecognitionIntent);
 	}
 
 	private void matchStrings(ArrayList<String> matches) {
@@ -89,18 +97,34 @@ public class Controller implements Observer {
 				|| matches.contains("okay zu hause") || matches
 					.contains("okay zu Hause")) && _buzzWordRecognized == false) {
 			_mainView.buzzWordRecognized();
-			if (_speechListener.hasSpeechEnded())
-				_sr.startListening(_speechRecognitionIntent);
+			while (!_speechListener.hasSpeechEnded()) {
+				try {
+					Thread.sleep(100, 0);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			_sr.startListening(_speechRecognitionIntent);
 
 		} else if (_buzzWordRecognized) {
 			String[] results = _matchResults.getCommand(matches);
-			if (results != null) {
-				_mainView.executeText.setText("test");
-				say("test");
+			if (results[1] != null) {
+				_mainView.executeText.setText(results[1]);
+				say(results[1]);
+			}
+			if (results[0] != null) {
 				_commandHttp = results[0];
 				_mainView.commandRecognized();
 			} else {
-				if (_speechListener.hasSpeechEnded())
+				while (!_speechListener.hasSpeechEnded()) {
+					try {
+						Thread.sleep(100, 0);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 					_sr.startListening(_speechRecognitionIntent);
 			}
 
@@ -132,7 +156,7 @@ public class Controller implements Observer {
 		}
 		_sr.startListening(_speechRecognitionIntent);
 	}
-
+	
 	@Override
 	public void update(Observable observable, Object data) {
 		if (data != null) {
@@ -143,19 +167,34 @@ public class Controller implements Observer {
 			} else if (data instanceof String) {
 				String errorMessage = (String) data;
 				Log.d("ERROR", errorMessage);
-				//_buzzWordRecognized = false;
+				// _buzzWordRecognized = false;
 				_mainView.ErrorTextView.setText(errorMessage);
-				if(errorMessage == "RecognitionService busy.")
-				{
+				if (errorMessage == "RecognitionService busy.") {
 					_sr.stopListening();
 				}
-				//if (_speechListener.hasSpeechEnded())
-				while(!_speechListener.hasSpeechEnded())
-					;
-					_sr.startListening(_speechRecognitionIntent);
+				// if (_speechListener.hasSpeechEnded())
+				while (!_speechListener.hasSpeechEnded()) {
+					try {
+						Thread.sleep(100, 0);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				_sr.startListening(_speechRecognitionIntent);
 			}
-		} else if (_speechListener.hasSpeechEnded())
-			_sr.startListening(_speechRecognitionIntent);
+		} else
+		{
+			while (!_speechListener.hasSpeechEnded()) {
+				try {
+					Thread.sleep(100, 0);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				_sr.startListening(_speechRecognitionIntent);
+			}
+		}
 
 	}
 

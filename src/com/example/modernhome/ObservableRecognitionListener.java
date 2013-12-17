@@ -30,29 +30,15 @@ public class ObservableRecognitionListener extends Observable implements
 	public void onBeginningOfSpeech() {
 //		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
 //			noSpeechCountdown.cancel();
-		Log.d("my", "onBeginningOfSpeech");
+		//Log.d("my", "onBeginningOfSpeech");
 
 	}
-	
-//	private CountDownTimer noSpeechCountdown = new CountDownTimer(5000, 5000) {
-//		
-//		@Override
-//		public void onTick(long millisUntilFinished) {
-//			// TODO Auto-generated method stub
-//			
-//		}
-//		
-//		@Override
-//		public void onFinish() {
-//			notifyObservers();
-//			
-//		}
-//	};
+
 
 	@Override
 	public void onBufferReceived(byte[] buffer) {
 		// TODO Auto-generated method stub
-		Log.d("my", "onBufferReceived");
+		//Log.d("my", "onBufferReceived");
 
 	}
 
@@ -116,14 +102,14 @@ public class ObservableRecognitionListener extends Observable implements
 	@Override
 	public void onPartialResults(Bundle partialResults) {
 		// TODO Auto-generated method stub
-		Log.d("my", "onPartialResults");
+		//Log.d("my", "onPartialResults");
 	}
 
 	@Override
 	public void onReadyForSpeech(Bundle params) {
 //		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
 //			noSpeechCountdown.start();
-		Log.d("my", "onReadyForSpeech");
+		//Log.d("my", "onReadyForSpeech");
 	}
 
 	@Override
@@ -141,7 +127,7 @@ public class ObservableRecognitionListener extends Observable implements
 	@Override
 	public void onRmsChanged(float rmsdB) {
 		// TODO Auto-generated method stub
-		Log.d("my", "onRmsChanged");
+		//Log.d("my", "onRmsChanged");
 	}
 
 }
