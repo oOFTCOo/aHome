@@ -2,9 +2,11 @@ package com.example.modernhome;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.speech.tts.TextToSpeech;
 import android.view.Menu;
 import android.view.Window;
 import android.view.WindowManager;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -52,6 +54,23 @@ public class MainActivity extends Activity {
 		addListenerOnbestaetigenButton();
 		addListenerOncancelButton();
 
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == Controller.CHECK_TTS_AVAILABILITY) {
+			if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
+				// success, create the TTS instance
+				_controller.createTTS();
+			} else {
+				// missing data, install it
+				Intent installIntent = new Intent();
+				installIntent
+						.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+				startActivity(installIntent);
+			}
+		}
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	public void addListenerOnOKButton() {
@@ -101,13 +120,6 @@ public class MainActivity extends Activity {
 	 super.onResume();
 	 }
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode,
-			android.content.Intent data) {
-		if (resultCode == 1234) {
-			_controller.notify();
-		}
-	}
 
 	public void buzzWordRecognized() {
 		if (_controller._buzzWordRecognized == false) {

@@ -12,9 +12,9 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
-import android.os.CountDownTimer;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.WindowManager;
 
@@ -29,7 +29,9 @@ public class Controller implements Observer {
 	private String _commandHttp;
 	public SoundPool _soundPool;
 	private StringMatcher _matchResults;
+	private TTS _tts;
 	public int _sound;
+	public static final int CHECK_TTS_AVAILABILITY = 4711;
 
 	public Controller(MainActivity View) {
 		if (_mainView == null) {
@@ -39,9 +41,11 @@ public class Controller implements Observer {
 	}
 
 	private void say(String text) {
-		Intent tts = new Intent(_mainView, TTS.class);
-		tts.putExtra(Intent.EXTRA_TEXT, text);
-		_mainView.startActivityForResult(tts, 1234);
+		_tts.speak(text);
+	}
+
+	public void createTTS() {
+		_tts = new TTS(_mainView);
 	}
 
 	private void init() {
@@ -53,6 +57,11 @@ public class Controller implements Observer {
 		_matchResults = new StringMatcher();
 		_audioManager = (AudioManager) _mainView
 				.getSystemService(Context.AUDIO_SERVICE);
+
+		Intent checkIntent = new Intent();
+		checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+		_mainView.startActivityForResult(checkIntent, CHECK_TTS_AVAILABILITY);
+
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 			// turn off beep soundController
 			_audioManager.setStreamMute(AudioManager.STREAM_SYSTEM, true);
@@ -109,13 +118,15 @@ public class Controller implements Observer {
 
 		} else if (_buzzWordRecognized) {
 			String[] results = _matchResults.getCommand(matches);
-			if (results[1] != null) {
-				_mainView.executeText.setText(results[1]);
-				say(results[1]);
-			}
-			if (results[0] != null) {
-				_commandHttp = results[0];
-				_mainView.commandRecognized();
+			if (results != null) {
+				if (results[1] != null) {
+					_mainView.executeText.setText(results[1]);
+					say(results[1]);
+				}
+				if (results[0] != null) {
+					_commandHttp = results[0];
+					_mainView.commandRecognized();
+				}
 			} else {
 				while (!_speechListener.hasSpeechEnded()) {
 					try {
@@ -125,9 +136,20 @@ public class Controller implements Observer {
 						e.printStackTrace();
 					}
 				}
-					_sr.startListening(_speechRecognitionIntent);
+				_sr.startListening(_speechRecognitionIntent);
 			}
-
+		}
+		else
+		{
+			while (!_speechListener.hasSpeechEnded()) {
+				try {
+					Thread.sleep(100, 0);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			_sr.startListening(_speechRecognitionIntent);
 		}
 	}
 
@@ -156,7 +178,7 @@ public class Controller implements Observer {
 		}
 		_sr.startListening(_speechRecognitionIntent);
 	}
-	
+
 	@Override
 	public void update(Observable observable, Object data) {
 		if (data != null) {
@@ -180,17 +202,6 @@ public class Controller implements Observer {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-				}
-				_sr.startListening(_speechRecognitionIntent);
-			}
-		} else
-		{
-			while (!_speechListener.hasSpeechEnded()) {
-				try {
-					Thread.sleep(100, 0);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
 				_sr.startListening(_speechRecognitionIntent);
 			}
