@@ -16,6 +16,7 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 
 public class Controller implements Observer {
@@ -186,7 +187,9 @@ public class Controller implements Observer {
 				@SuppressWarnings("unchecked")
 				ArrayList<String> temp = (ArrayList<String>) data;
 				matchStrings(temp);
+                _mainView.ErrorTextView.setVisibility(View.INVISIBLE);
 			} else if (data instanceof String) {
+                _mainView.ErrorTextView.setVisibility(View.VISIBLE);
 				String errorMessage = (String) data;
 				Log.d("ERROR", errorMessage);
 				// _buzzWordRecognized = false;

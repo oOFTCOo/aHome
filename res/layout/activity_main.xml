@@ -47,7 +47,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:id="@+id/ErrorMessage"
         android:layout_gravity="center"
-        android:visibility="visible" />
+        android:visibility="invisible" />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -65,9 +65,10 @@
             android:textColor="#797979"
             android:paddingRight="85dp"
             android:paddingLeft="60dp"
-            android:paddingTop="30dp"
-            android:paddingBottom="30dp"
-            android:visibility="invisible" />
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:visibility="invisible"
+            android:textSize="18dp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -87,8 +88,8 @@
             android:textColor="#ffffff"
             android:paddingLeft="60dp"
             android:paddingRight="60dp"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:visibility="invisible" />
 
     </LinearLayout>
