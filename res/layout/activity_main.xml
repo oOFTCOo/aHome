@@ -41,6 +41,14 @@
         android:gravity="fill"
         android:visibility="visible" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/ErrorMessage"
+        android:layout_gravity="center"
+        android:visibility="visible" />
+
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -82,14 +90,6 @@
             android:paddingTop="20dp"
             android:paddingBottom="20dp"
             android:visibility="invisible" />
-
-        <TextView
-            android:id="@+id/ErrorMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" 
-            android:layout_gravity="center_horizontal"
-        	android:textSize="33dp" 
-        />
 
     </LinearLayout>
 
